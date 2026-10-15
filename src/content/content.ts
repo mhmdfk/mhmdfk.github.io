@@ -68,6 +68,28 @@ export const profile: Profile = {
   cvUrl: '/Mohammad_Asad_CV.pdf',
 }
 
+export const seo = {
+  title: `${profile.name} — ${profile.title}`,
+  description:
+    'Mohammad Asad is a full-stack engineer building production web apps with Spring Boot, React and AI features.',
+  url: 'https://mhmdfk.github.io/',
+  imageAlt: 'Mohammad Asad — Full-Stack Software Engineer portfolio',
+  person: {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: profile.name,
+    jobTitle: profile.title,
+    url: 'https://mhmdfk.github.io/',
+    sameAs: [profile.links.github, profile.links.linkedin],
+    email: profile.email,
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: 'Dubai',
+      addressCountry: 'AE',
+    },
+  },
+}
+
 export const experiences: Experience[] = [
   {
     id: 'gauge-solutions',
