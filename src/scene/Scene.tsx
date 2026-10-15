@@ -1,9 +1,16 @@
+import type { SceneQuality } from './quality'
+import { set as setSceneQuality } from '../state/sceneQuality'
 import { ui } from '../content/content'
 import { HoverContext, sceneTargetAllowed, type Hover } from './interaction'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Color } from 'three'
-import { ContactShadows, Environment, Lightformer } from '@react-three/drei'
+import {
+  ContactShadows,
+  Environment,
+  Lightformer,
+  PerformanceMonitor,
+} from '@react-three/drei'
 import {
   Bloom,
   EffectComposer,
@@ -15,6 +22,62 @@ import { Room } from './Room'
 import { palette } from './layout'
 import { cameraStops } from './cameraPath'
 import { useScrollCamera } from './useScrollCamera'
+
+function disableScene() {
+  setSceneQuality({ detected: 'off' })
+}
+
+function SceneRuntime({
+  tier,
+  stage,
+  onDecline,
+}: {
+  tier: Exclude<SceneQuality, 'off'>
+  stage: number
+  onDecline: () => void
+}) {
+  const gl = useThree((state) => state.gl)
+  const setFrameloop = useThree((state) => state.setFrameloop)
+  const [active, setActive] = useState(false)
+  useEffect(() => {
+    let intersecting = true
+    const update = () => {
+      const running = !document.hidden && intersecting
+      setFrameloop(running ? 'always' : 'never')
+      setActive(running)
+    }
+    const lost = (event: Event) => {
+      event.preventDefault()
+      setFrameloop('never')
+      disableScene()
+    }
+    const canvas = gl.domElement
+    const observer = new IntersectionObserver(([entry]) => {
+      intersecting = entry.isIntersecting
+      update()
+    })
+    observer.observe(canvas)
+    canvas.addEventListener('webglcontextlost', lost)
+    document.addEventListener('visibilitychange', update)
+    update()
+    return () => {
+      observer.disconnect()
+      canvas.removeEventListener('webglcontextlost', lost)
+      document.removeEventListener('visibilitychange', update)
+    }
+  }, [gl, setFrameloop])
+
+  return active ? (
+    <PerformanceMonitor
+      key={stage}
+      ms={500}
+      iterations={10}
+      threshold={0.8}
+      bounds={() => [tier === 'high' && stage < 2 ? 55 : 30, 60]}
+      onDecline={onDecline}
+    />
+  ) : null
+}
 
 function ScrollCamera() {
   useScrollCamera()
@@ -36,7 +99,19 @@ function FirstFrame({ onReady }: { onReady: () => void }) {
   return null
 }
 
-export default function Scene({ eventSource }: { eventSource: HTMLElement }) {
+export default function Scene({
+  eventSource,
+  tier,
+}: {
+  eventSource: HTMLElement
+  tier: Exclude<SceneQuality, 'off'>
+}) {
+  const [stage, setStage] = useState(0)
+  const full = tier === 'high' && stage < 2
+  const decline = () => {
+    if (tier === 'low' || stage >= 2) disableScene()
+    else setStage(stage + 1)
+  }
   const [visible, setVisible] = useState(false)
   const [hover, setHover] = useState<Hover>(null)
   useEffect(() => {
@@ -73,8 +148,9 @@ export default function Scene({ eventSource }: { eventSource: HTMLElement }) {
           <Canvas
             eventSource={eventSource}
             eventPrefix="client"
-            shadows
-            dpr={[1, 1.5]}
+            shadows={full ? 'percentage' : false}
+            dpr={tier === 'high' && stage === 0 ? [1, 2] : 1}
+            frameloop="never"
             camera={{
               position: cameraStops[0].position,
               fov: 42,
@@ -92,7 +168,7 @@ export default function Scene({ eventSource }: { eventSource: HTMLElement }) {
             <ambientLight color="#c2d5c9" intensity={0.3} />
             <directionalLight
               position={[-3, 7, 4]}
-              castShadow
+              castShadow={full}
               shadow-mapSize={[1024, 1024]}
               shadow-camera-left={-7}
               shadow-camera-right={7}
@@ -127,16 +203,19 @@ export default function Scene({ eventSource }: { eventSource: HTMLElement }) {
                 intensity={2}
               />
             </Environment>
-            <EffectComposer multisampling={0} enableNormalPass={false}>
-              <Bloom
-                mipmapBlur
-                intensity={0.12}
-                luminanceThreshold={1}
-                luminanceSmoothing={0.15}
-              />
-              <Vignette eskil={false} offset={0.2} darkness={0.3} />
-              <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
-            </EffectComposer>
+            {full && (
+              <EffectComposer multisampling={0} enableNormalPass={false}>
+                <Bloom
+                  mipmapBlur
+                  intensity={0.12}
+                  luminanceThreshold={1}
+                  luminanceSmoothing={0.15}
+                />
+                <Vignette eskil={false} offset={0.2} darkness={0.3} />
+                <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
+              </EffectComposer>
+            )}
+            <SceneRuntime tier={tier} stage={stage} onDecline={decline} />
             <ScrollCamera />
             <HoverContext.Provider value={{ hover, reportHover: setHover }}>
               <Room />

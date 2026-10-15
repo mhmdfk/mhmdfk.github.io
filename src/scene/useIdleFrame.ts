@@ -1,7 +1,9 @@
 import { useEffect, useRef } from 'react'
+import { useSceneQuality } from '../state/sceneQuality'
 import { useFrame } from '@react-three/fiber'
 
 export function useIdleFrame(animate: (time: number) => void) {
+  const { detected, override } = useSceneQuality()
   const paused = useRef(true)
   const time = useRef(0)
   useEffect(() => {
@@ -18,7 +20,7 @@ export function useIdleFrame(animate: (time: number) => void) {
     }
   }, [])
   useFrame((_, delta) => {
-    if (paused.current) return
+    if (paused.current || detected !== 'high' || override === 'off') return
     time.current += Math.min(delta, 0.1)
     animate(time.current)
   })

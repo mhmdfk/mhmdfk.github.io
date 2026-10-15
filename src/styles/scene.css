@@ -67,3 +67,33 @@
     gap: 0.75rem;
   }
 }
+
+.scene-backdrop {
+  overflow: hidden;
+  background: radial-gradient(
+    ellipse at 65% 30%,
+    var(--color-surface),
+    var(--color-background) 75%
+  );
+}
+.scene-backdrop::before,
+.scene-backdrop::after {
+  content: '';
+  position: absolute;
+  width: 45vw;
+  height: 50vh;
+  border-radius: 40%;
+  filter: blur(70px);
+  opacity: 0.13;
+}
+.scene-backdrop::before {
+  top: 8%;
+  right: 5%;
+  background: var(--color-accent);
+  box-shadow: -35vw 48vh 0 var(--color-muted);
+}
+.scene-backdrop::after {
+  bottom: 5%;
+  right: 15%;
+  background: var(--color-room-wood);
+}
