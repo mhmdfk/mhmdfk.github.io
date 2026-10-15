@@ -29,6 +29,7 @@ export type Project = {
   tagline: string
   liveUrl?: string
   repoUrl?: string
+  screenshot?: { src: string; alt: string }
   role: string
   stack: string[]
   highlights: string[]
@@ -113,6 +114,10 @@ export const projects: Project[] = [
     name: 'Tiraz',
     tagline: 'AI interior design platform',
     liveUrl: 'https://tiraz.sa',
+    screenshot: {
+      src: '/projects/tiraz.webp',
+      alt: 'Tiraz’s Arabic homepage showing a living room with AI design overlays.',
+    },
     role: 'Full-stack engineer',
     stack: [
       'Spring Boot',
@@ -143,6 +148,10 @@ export const projects: Project[] = [
     name: 'Huntrix',
     tagline: 'AI recruitment assistant',
     liveUrl: 'https://huntrixai.com',
+    screenshot: {
+      src: '/projects/huntrix.webp',
+      alt: 'Huntrix’s recruitment interface showing a ranked candidate shortlist.',
+    },
     role: 'Full-stack engineer',
     stack: [
       'Next.js',
@@ -252,6 +261,49 @@ export const ui = {
     caseStudy: 'Read case study',
     live: 'Visit live site',
     repo: 'View repository',
+  },
+  caseStudy: {
+    close: 'Close',
+    problem: 'Problem',
+    role: 'My role',
+    approach: 'Approach',
+    highlights: 'Highlights',
+    stack: 'Stack',
+    outcome: 'Outcome',
+    diagram: 'How it works',
+    screenshot: 'Product screenshot',
+    diagrams: {
+      tiraz: {
+        title:
+          'Tiraz flow from retailer catalogues to an AI room redesign for the user',
+        steps: [
+          'Retailer catalogues',
+          'Data pipeline',
+          'Product database',
+          'Room-fit selection',
+          'AI redesign',
+          'User',
+        ],
+      },
+      huntrix: {
+        title:
+          'Huntrix flow from hiring brief to a ranked shortlist for the recruiter',
+        steps: [
+          'Hiring brief',
+          'AI search agent',
+          'Candidate data providers',
+          'Ranked shortlist',
+          'Recruiter',
+        ],
+      },
+      matjari: {
+        title:
+          'Matjari buyer flow through the web app and API to the database, with image search and real-time chat',
+        steps: ['Buyer', 'Web app', 'Node.js API', 'PostgreSQL'],
+        imageSearch: ['Image search', '(Azure Vision)'],
+        chat: ['Real-time chat'],
+      },
+    },
   },
   about: {
     label: '03 / About',

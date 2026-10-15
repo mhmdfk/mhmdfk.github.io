@@ -1,5 +1,8 @@
+import { useRef } from 'react'
+import { CaseStudyPanel } from '../components/CaseStudyPanel'
 import { projects, ui } from '../content/content'
 export function Work() {
+  const triggers = useRef<Record<string, HTMLButtonElement | null>>({})
   return (
     <section id="work" className="section" aria-labelledby="work-title">
       <div className="section-heading">
@@ -34,7 +37,14 @@ export function Work() {
               ))}
             </ul>
             <div className="project-actions">
-              <button type="button" className="text-button">
+              <button
+                type="button"
+                className="text-button"
+                aria-haspopup="dialog"
+                ref={(button) => {
+                  triggers.current[project.id] = button
+                }}
+              >
                 {ui.work.caseStudy}
                 <span aria-hidden="true">↗</span>
               </button>
@@ -46,6 +56,7 @@ export function Work() {
           </article>
         ))}
       </div>
+      <CaseStudyPanel triggers={triggers} />
     </section>
   )
 }

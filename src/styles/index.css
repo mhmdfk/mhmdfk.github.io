@@ -2,6 +2,7 @@
 @import '@fontsource/inter/latin-500.css';
 @import '@fontsource/space-grotesk/latin-500.css';
 @import 'tailwindcss';
+@import './case-study.css';
 
 @theme {
   --color-background: #101413;
