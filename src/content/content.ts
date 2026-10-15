@@ -238,6 +238,7 @@ export const education: Education = {
 }
 
 export const ui = {
+  sceneLoading: 'Loading room…',
   commandPalette: {
     title: 'Command palette',
     open: 'Open command palette',

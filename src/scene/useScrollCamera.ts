@@ -1,4 +1,6 @@
 import { useEffect, useRef } from 'react'
+import type { SceneIntro } from './useSceneIntro'
+import type { SceneQuality } from './quality'
 import { useFrame } from '@react-three/fiber'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -6,7 +8,12 @@ import { MathUtils, PerspectiveCamera, Vector3 } from 'three'
 import { sectionTop, subscribeReducedMotion } from '../lib/smoothScroll'
 import { cameraAt, cameraStops } from './cameraPath'
 
-export function useScrollCamera() {
+export function useScrollCamera(
+  intro: SceneIntro,
+  tier: Exclude<SceneQuality, 'off'>,
+) {
+  const introElapsed = useRef(0)
+  const updateProgress = useRef(() => {})
   const progress = useRef(0)
   const reduced = useRef(false)
   const initialized = useRef(false)
@@ -54,6 +61,7 @@ export function useScrollCamera() {
         span > 0 ? MathUtils.clamp((scroll - stops[index]) / span, 0, 1) : 1
       progress.current = (index + fraction) / (stops.length - 1)
     }
+    updateProgress.current = update
     measure()
     update()
     const trigger = ScrollTrigger.create({
@@ -88,13 +96,38 @@ export function useScrollCamera() {
         camera.updateProjectionMatrix()
       }
     }
+    if (
+      intro.enabled() &&
+      (tier !== 'high' ||
+        reduced.current ||
+        window.location.hash ||
+        window.scrollY > 0)
+    ) {
+      intro.skip()
+    }
+    const snap = intro.takeSnap()
+    if (snap) updateProgress.current()
     const value = reduced.current
       ? Math.round(progress.current * (cameraStops.length - 1)) /
         (cameraStops.length - 1)
       : progress.current
     const next = cameraAt(value)
+    if (intro.enabled()) {
+      // The first rendered frame starts outside; both endpoints share the scroll path.
+      const time = Math.min(1, introElapsed.current / 2.2)
+      const remaining = 1 - time * time * (3 - 2 * time)
+      next.position[1] += 0.8 * remaining
+      next.position[2] += 3 * remaining
+      camera.position.set(...next.position)
+      target.current.set(...next.target)
+      camera.lookAt(target.current)
+      initialized.current = true
+      introElapsed.current += delta
+      if (time === 1) intro.finish()
+      return
+    }
     // Reach 99% of a new framing within 300 ms, with no time-based path drift.
-    const blend = initialized.current ? 1 - Math.exp(-20 * delta) : 1
+    const blend = initialized.current && !snap ? 1 - Math.exp(-20 * delta) : 1
     camera.position.lerp(new Vector3(...next.position), blend)
     target.current.lerp(new Vector3(...next.target), blend)
     camera.lookAt(target.current)

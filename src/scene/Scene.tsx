@@ -1,3 +1,4 @@
+import type { SceneIntro } from './useSceneIntro'
 import type { SceneQuality } from './quality'
 import { set as setSceneQuality } from '../state/sceneQuality'
 import { ui } from '../content/content'
@@ -10,6 +11,7 @@ import {
   Environment,
   Lightformer,
   PerformanceMonitor,
+  useProgress,
 } from '@react-three/drei'
 import {
   Bloom,
@@ -79,8 +81,26 @@ function SceneRuntime({
   ) : null
 }
 
-function ScrollCamera() {
-  useScrollCamera()
+function ScrollCamera({
+  intro,
+  tier,
+}: {
+  intro: SceneIntro
+  tier: Exclude<SceneQuality, 'off'>
+}) {
+  useScrollCamera(intro, tier)
+  return null
+}
+
+function LoadingProgress({
+  onProgress,
+}: {
+  onProgress: (progress: number | null) => void
+}) {
+  const { total, progress } = useProgress()
+  useEffect(() => {
+    onProgress(total > 0 ? progress : null)
+  }, [total, progress, onProgress])
   return null
 }
 
@@ -102,7 +122,13 @@ function FirstFrame({ onReady }: { onReady: () => void }) {
 export default function Scene({
   eventSource,
   tier,
+  intro,
+  onReady,
+  onProgress,
 }: {
+  intro: SceneIntro
+  onReady: () => void
+  onProgress: (progress: number | null) => void
   eventSource: HTMLElement
   tier: Exclude<SceneQuality, 'off'>
 }) {
@@ -139,10 +165,14 @@ export default function Scene({
     eventSource.classList.add('scene-object-hovered')
     return () => eventSource.classList.remove('scene-object-hovered')
   }, [hover, eventSource])
-  const reveal = useCallback(() => setVisible(true), [])
+  const reveal = useCallback(() => {
+    setVisible(true)
+    onReady()
+  }, [onReady])
 
   return (
     <>
+      <LoadingProgress onProgress={onProgress} />
       <div className={visible ? 'scene is-ready' : 'scene'} aria-hidden="true">
         {eventSource && (
           <Canvas
@@ -216,7 +246,7 @@ export default function Scene({
               </EffectComposer>
             )}
             <SceneRuntime tier={tier} stage={stage} onDecline={decline} />
-            <ScrollCamera />
+            <ScrollCamera intro={intro} tier={tier} />
             <HoverContext.Provider value={{ hover, reportHover: setHover }}>
               <Room />
             </HoverContext.Provider>

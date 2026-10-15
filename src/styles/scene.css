@@ -97,3 +97,66 @@
   right: 15%;
   background: var(--color-room-wood);
 }
+
+.scene-loading-slot {
+  position: absolute;
+  top: 100%;
+  inset-inline: 0;
+  pointer-events: none;
+}
+.scene-loading {
+  position: absolute;
+  top: 0;
+  inset-inline: 0;
+  z-index: 19;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 300ms ease,
+    visibility 0s 300ms;
+}
+.scene-loading.is-loading {
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s;
+}
+.scene-loading-track {
+  height: 2px;
+  overflow: hidden;
+}
+.scene-loading-track > span {
+  display: block;
+  height: 100%;
+  background: var(--color-accent);
+}
+.scene-loading-track .is-indeterminate {
+  width: 25%;
+  animation: room-loading 1.4s ease-in-out infinite;
+}
+.scene-loading-label {
+  display: block;
+  width: fit-content;
+  margin: 0.15rem 1.25rem 0 auto;
+  padding: 0 0.4rem;
+  border-radius: 3px;
+  background: var(--color-background);
+  color: var(--color-muted);
+  font-size: 0.7rem;
+}
+@keyframes room-loading {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(400%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scene-loading {
+    transition: none;
+  }
+  .scene-loading-track .is-indeterminate {
+    animation: none;
+  }
+}
