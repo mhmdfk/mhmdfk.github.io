@@ -1,3 +1,4 @@
+import { isSplashActive } from '../lib/splash'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { profile, ui } from '../content/content'
 import { openCaseStudy } from '../lib/caseStudyActions'
@@ -38,7 +39,7 @@ export function CommandPalette() {
   }, [])
 
   const show = useCallback(() => {
-    if (!dialog.current || dialog.current.open) return
+    if (isSplashActive() || !dialog.current || dialog.current.open) return
     // Keep a single modal active so scroll locking and focus have one owner.
     if (document.querySelector('dialog[open]')) return
     previousFocus.current = document.activeElement as HTMLElement | null
@@ -56,6 +57,7 @@ export function CommandPalette() {
     const shortcut = (event: KeyboardEvent) => {
       const target = event.target
       if (
+        isSplashActive() ||
         event.defaultPrevented ||
         event.repeat ||
         event.isComposing ||

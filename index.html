@@ -2,6 +2,22 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <script>
+      document.documentElement.classList.add('js')
+      ;(function () {
+        var skip =
+          window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
+          (navigator.connection && navigator.connection.saveData)
+        try {
+          skip =
+            skip || localStorage.getItem('scene-quality-override') === 'off'
+        } catch {}
+        if (!skip) {
+          document.documentElement.classList.add('splash-pending')
+          performance.mark('splash-start')
+        }
+      })()
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>__SEO_TITLE__</title>
     <meta name="description" content="__SEO_DESCRIPTION__" />

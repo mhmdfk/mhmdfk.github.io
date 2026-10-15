@@ -1,0 +1,124 @@
+.splash {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: radial-gradient(
+    ellipse at 65% 30%,
+    var(--color-surface),
+    var(--color-background) 75%
+  );
+  opacity: 1;
+  transform: scale(1);
+  transition:
+    opacity 600ms ease,
+    transform 600ms ease;
+}
+html {
+  scrollbar-gutter: stable;
+}
+html.splash-pending,
+html.splash-pending body {
+  overflow: hidden;
+}
+html.js.splash-pending .splash {
+  display: flex;
+}
+.splash--exiting,
+.splash--quick-exit {
+  opacity: 0;
+  transform: scale(1.025);
+}
+.splash--quick-exit {
+  transition-duration: 150ms;
+}
+.splash-brand {
+  width: 100%;
+  max-width: 24rem;
+  text-align: center;
+}
+.splash-monogram {
+  width: 6rem;
+  height: 6rem;
+  max-width: 100%;
+  margin-inline: auto;
+  color: var(--color-accent);
+}
+.splash-monogram path {
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  animation: splash-draw 700ms ease both;
+}
+.splash-name {
+  margin-top: 1rem;
+  font-family: var(--font-heading);
+  font-size: clamp(1.5rem, 6vw, 2rem);
+  letter-spacing: -0.04em;
+}
+.splash-title,
+.splash-status {
+  color: var(--color-muted);
+  font-size: 0.8rem;
+  line-height: 1.6;
+  margin-top: 0.5rem;
+}
+.splash-progress {
+  width: min(10rem, 100%);
+  height: 2px;
+  margin: 2rem auto 0;
+  background: var(--color-border);
+  overflow: hidden;
+}
+.splash-progress > span {
+  display: block;
+  height: 100%;
+  background: var(--color-accent);
+  transform-origin: left;
+  transition: transform 200ms ease;
+}
+.splash-progress .is-indeterminate {
+  width: 30%;
+  animation: splash-progress 1.4s ease-in-out infinite;
+}
+.splash-status {
+  margin-top: 0.9rem;
+  font-size: 0.7rem;
+}
+.splash-skip {
+  position: absolute;
+  right: max(1.5rem, env(safe-area-inset-right));
+  bottom: max(1.5rem, env(safe-area-inset-bottom));
+  min-height: 2.75rem;
+  padding: 0.5rem;
+  font-size: 0.8rem;
+}
+@keyframes splash-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes splash-progress {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(440%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .splash,
+  .splash-monogram path,
+  .splash-progress .is-indeterminate {
+    animation: none;
+    transition: none;
+  }
+}

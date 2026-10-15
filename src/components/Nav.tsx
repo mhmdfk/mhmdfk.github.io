@@ -78,11 +78,6 @@ export function Nav() {
         </div>
         <CommandPalette />
       </nav>
-      <div
-        id="scene-loading-slot"
-        className="scene-loading-slot"
-        aria-hidden="true"
-      />
     </header>
   )
 }

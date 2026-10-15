@@ -260,7 +260,12 @@ export const education: Education = {
 }
 
 export const ui = {
-  sceneLoading: 'Loading room…',
+  splash: {
+    announcement: 'Loading',
+    loading: 'Loading the studio…',
+    building: 'Arranging the room…',
+    skip: 'Skip',
+  },
   commandPalette: {
     title: 'Command palette',
     open: 'Open command palette',

@@ -1,3 +1,4 @@
+import { isSplashActive } from '../lib/splash'
 import { openCaseStudy, registerCaseStudyOpener } from '../lib/caseStudyActions'
 import { scrollToId, setDialogScrollLocked } from '../lib/smoothScroll'
 import { useEffect, useRef, type RefObject } from 'react'
@@ -54,6 +55,7 @@ export function CaseStudyPanel({ triggers }: Props) {
     const unregisterOpener = registerCaseStudyOpener(open)
 
     const syncHash = () => {
+      if (isSplashActive()) return
       const project = projects.find(
         (item) => '#' + item.id === window.location.hash,
       )
@@ -82,12 +84,14 @@ export function CaseStudyPanel({ triggers }: Props) {
         dialog.removeEventListener('cancel', onCancel)
       })
     }
+    window.addEventListener('splashdone', syncHash)
     window.addEventListener('popstate', syncHash)
     window.addEventListener('hashchange', syncHash)
     syncHash()
     return () => {
       unregisterOpener()
       cleanups.forEach((cleanup) => cleanup())
+      window.removeEventListener('splashdone', syncHash)
       window.removeEventListener('popstate', syncHash)
       window.removeEventListener('hashchange', syncHash)
       close(false)

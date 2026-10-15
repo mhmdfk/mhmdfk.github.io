@@ -20,19 +20,21 @@ export default function App() {
     <LazyMotion features={domAnimation} strict>
       <CustomCursor />
       <SceneLoader />
-      <a className="skip-link" href="#main">
-        {ui.skip}
-      </a>
-      <Nav />
-      <main id="main" tabIndex={-1} className="container">
-        <Hero />
-        <Experience />
-        <Work />
-        <About />
-        <Skills />
-        <Contact />
-      </main>
-      <Footer />
+      <div id="site-content">
+        <a className="skip-link" href="#main">
+          {ui.skip}
+        </a>
+        <Nav />
+        <main id="main" tabIndex={-1} className="container">
+          <Hero />
+          <Experience />
+          <Work />
+          <About />
+          <Skills />
+          <Contact />
+        </main>
+        <Footer />
+      </div>
     </LazyMotion>
   )
 }

@@ -1,7 +1,9 @@
+import { isSplashActive } from './splash'
 import Lenis from 'lenis'
 
 let lenis: Lenis | null = null
 let dialogOpen = false
+let splashOpen = false
 let reducedMotion = false
 const motionListeners = new Set<(reduced: boolean) => void>()
 
@@ -31,7 +33,13 @@ export function sectionTop(id: string) {
 
 export function setDialogScrollLocked(locked: boolean) {
   dialogOpen = locked
-  if (locked) lenis?.stop()
+  if (dialogOpen || splashOpen) lenis?.stop()
+  else lenis?.start()
+}
+
+export function setSplashScrollLocked(locked: boolean) {
+  splashOpen = locked
+  if (dialogOpen || splashOpen) lenis?.stop()
   else lenis?.start()
 }
 
@@ -67,7 +75,7 @@ export function initSmoothScroll() {
         autoRaf: true,
         prevent: (node) => node instanceof HTMLDialogElement,
       })
-      if (dialogOpen) lenis.stop()
+      if (dialogOpen || splashOpen || isSplashActive()) lenis.stop()
     }
   }
   const navigate = (event: MouseEvent) => {
@@ -90,12 +98,14 @@ export function initSmoothScroll() {
     scrollToId(id)
   }
   const syncHash = () => {
+    if (isSplashActive()) return
     const id = window.location.hash.slice(1)
     if (id) scrollToId(id, { updateHash: false, immediate: true })
   }
   let disposed = false
   configure()
   document.addEventListener('click', navigate)
+  window.addEventListener('splashdone', syncHash)
   window.addEventListener('hashchange', syncHash)
   window.addEventListener('popstate', syncHash)
   motion.addEventListener('change', configure)
@@ -105,6 +115,7 @@ export function initSmoothScroll() {
   return () => {
     disposed = true
     document.removeEventListener('click', navigate)
+    window.removeEventListener('splashdone', syncHash)
     window.removeEventListener('hashchange', syncHash)
     window.removeEventListener('popstate', syncHash)
     motion.removeEventListener('change', configure)

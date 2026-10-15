@@ -127,7 +127,7 @@ export function useScrollCamera(
       target.current.set(...next.target)
       camera.lookAt(target.current)
       initialized.current = true
-      introElapsed.current += delta
+      if (!intro.waiting()) introElapsed.current += Math.min(delta, 0.05)
       if (time === 1) intro.finish()
       return
     }

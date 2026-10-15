@@ -1,7 +1,9 @@
+import { isSplashActive } from '../lib/splash'
 import { useEffect, useMemo, useRef } from 'react'
 
 export type SceneIntro = {
   enabled: () => boolean
+  waiting: () => boolean
   skip: () => void
   finish: () => void
   takeSnap: () => boolean
@@ -27,7 +29,7 @@ export function useSceneIntro() {
       }
     }
     const skip = () => {
-      if (!intro.current.enabled) return
+      if (isSplashActive() || !intro.current.enabled) return
       intro.current.enabled = false
       intro.current.snap = true
     }
@@ -49,6 +51,7 @@ export function useSceneIntro() {
   return useMemo<SceneIntro>(
     () => ({
       enabled: () => intro.current.enabled,
+      waiting: isSplashActive,
       skip: () => {
         intro.current.enabled = false
         intro.current.snap = true
