@@ -225,3 +225,46 @@ export const education: Education = {
   end: 'Jun 2025',
   note: 'GPA 3.99 / 4.0',
 }
+
+export const ui = {
+  skip: 'Skip to content',
+  navigation: 'Main navigation',
+  menu: 'Menu',
+  home: 'Back to top',
+  nav: [
+    { id: 'experience', label: 'Experience' },
+    { id: 'work', label: 'Work' },
+    { id: 'about', label: 'About' },
+    { id: 'skills', label: 'Skills' },
+    { id: 'contact', label: 'Contact' },
+  ],
+  hero: {
+    eyebrow: 'Engineering · Web · AI',
+    download: 'Download CV',
+    contact: 'Contact',
+  },
+  experience: { label: '01 / Experience', heading: 'Built in practice.' },
+  work: {
+    label: '02 / Selected work',
+    heading: 'From idea to production.',
+    caseStudy: 'Read case study',
+    live: 'Visit live site',
+    repo: 'View repository',
+  },
+  about: {
+    label: '03 / About',
+    heading: 'End to end, with intent.',
+    education: 'Education',
+  },
+  skills: { label: '04 / Toolkit', heading: 'The tools behind the work.' },
+  contact: {
+    label: '05 / Contact',
+    heading: 'Let’s build something.',
+    copy: 'Copy',
+    copied: 'Copied',
+    copyFailed: 'Couldn’t copy. Select the email to copy it.',
+    github: 'GitHub',
+    linkedin: 'LinkedIn',
+  },
+  footer: 'Back to top',
+}

@@ -1,9 +1,29 @@
+import { Nav } from './components/Nav'
+import { ui } from './content/content'
+import { Hero } from './sections/Hero'
+import { Experience } from './sections/Experience'
+import { Work } from './sections/Work'
+import { About } from './sections/About'
+import { Skills } from './sections/Skills'
+import { Contact } from './sections/Contact'
+import { Footer } from './sections/Footer'
+
 export default function App() {
   return (
-    <main className="grid min-h-svh place-items-center bg-background px-6 text-text">
-      <h1 className="text-center text-xl font-medium sm:text-2xl">
-        Mohammad Asad — Software Engineer · coming soon
-      </h1>
-    </main>
+    <>
+      <a className="skip-link" href="#main">
+        {ui.skip}
+      </a>
+      <Nav />
+      <main id="main" tabIndex={-1} className="container">
+        <Hero />
+        <Experience />
+        <Work />
+        <About />
+        <Skills />
+        <Contact />
+      </main>
+      <Footer />
+    </>
   )
 }
