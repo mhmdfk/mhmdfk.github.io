@@ -1,3 +1,4 @@
+import { scrollToId, setDialogScrollLocked } from '../lib/smoothScroll'
 import { useEffect, useRef, type RefObject } from 'react'
 import { projects, ui } from '../content/content'
 import { TirazDiagram } from './diagrams/TirazDiagram'
@@ -26,6 +27,7 @@ export function CaseStudyPanel({ triggers }: Props) {
       active = null
       dialogs.current[id]?.close()
       document.body.style.overflow = previousOverflow
+      setDialogScrollLocked(false)
       if (updateHash) window.history.replaceState(null, '', '#work')
       triggers.current[id]?.focus({ preventScroll: true })
     }
@@ -35,6 +37,10 @@ export function CaseStudyPanel({ triggers }: Props) {
       close(false)
       const dialog = dialogs.current[id]
       if (!dialog) return
+      // Deep links land on the work section so the panel closes onto its card.
+      if (!updateHash)
+        scrollToId('work', { updateHash: false, immediate: true })
+      setDialogScrollLocked(true)
       previousOverflow = document.body.style.overflow
       active = id
       document.body.style.overflow = 'hidden'

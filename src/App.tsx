@@ -1,3 +1,5 @@
+import { useEffect } from 'react'
+import { initSmoothScroll } from './lib/smoothScroll'
 import { SceneLoader } from './scene/SceneLoader'
 import { Nav } from './components/Nav'
 import { ui } from './content/content'
@@ -10,6 +12,8 @@ import { Contact } from './sections/Contact'
 import { Footer } from './sections/Footer'
 
 export default function App() {
+  useEffect(initSmoothScroll, [])
+
   return (
     <>
       <SceneLoader />

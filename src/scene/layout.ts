@@ -13,10 +13,6 @@ export const anchors = {
   window: { position: [-0.5, 2.2, -4.9], target: [-0.5, 2.2, -4.8] },
 } satisfies Record<string, Anchor>
 
-export const cameraStops = {
-  hero: { position: [0, 7.5, 18], target: [0, 1.3, -0.6] },
-} satisfies Record<string, Anchor>
-
 export const palette = {
   background: '#101413',
   wall: '#253b33',
