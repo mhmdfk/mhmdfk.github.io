@@ -1,3 +1,6 @@
+import { useRef } from 'react'
+import type { Group } from 'three'
+import { useIdleFrame } from '../useIdleFrame'
 import { anchors, palette } from '../layout'
 import { Block, Blocks } from '../primitives'
 
@@ -17,6 +20,17 @@ const strings = [
 ] as const
 
 export function Corkboard() {
+  const strands = useRef<(Group | null)[]>([])
+  useIdleFrame((time) => {
+    strands.current.forEach((strand, index) => {
+      if (!strand) return
+      const [from, to] = strings[index]
+      const [x1, y1] = cards[from].position
+      const [x2, y2] = cards[to].position
+      strand.rotation.z =
+        Math.atan2(y2 - y1, x2 - x1) + Math.sin(time * 0.9 + index) * 0.012
+    })
+  })
   return (
     <group
       position={anchors.corkboard.position}
@@ -36,7 +50,7 @@ export function Corkboard() {
         size={[0.06, 0.06, 0.04]}
         color={palette.accent}
       />
-      {strings.map(([from, to]) => {
+      {strings.map(([from, to], index) => {
         const [x1, y1] = cards[from].position
         const [x2, y2] = cards[to].position
         const dx = x2 - x1
@@ -45,6 +59,9 @@ export function Corkboard() {
         return (
           <group
             key={`${from}-${to}`}
+            ref={(strand) => {
+              strands.current[index] = strand
+            }}
             position={[(x1 + x2) / 2, (y1 + y2) / 2 + 0.16, 0.17]}
             rotation={[0, 0, Math.atan2(dy, dx)]}
           >

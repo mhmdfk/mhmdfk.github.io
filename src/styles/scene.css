@@ -40,3 +40,20 @@
     transition: none;
   }
 }
+
+.scene-object-hovered {
+  cursor: pointer;
+}
+.scene-tooltip {
+  position: fixed;
+  z-index: 20;
+  pointer-events: none;
+  transform: translate(14px, 18px);
+  max-width: 12rem;
+  padding: 0.4rem 0.65rem;
+  border-radius: 4px;
+  background: var(--color-background);
+  color: var(--color-text);
+  border: 1px solid var(--color-accent);
+  font-size: 0.8rem;
+}

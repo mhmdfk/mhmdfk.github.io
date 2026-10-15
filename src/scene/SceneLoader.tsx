@@ -19,23 +19,26 @@ class SceneErrorBoundary extends Component<
 }
 
 export function SceneLoader() {
-  const [ready, setReady] = useState(false)
+  const [ready, setReady] = useState<HTMLElement | null>(null)
 
   useEffect(() => {
     if ('requestIdleCallback' in window) {
-      const id = window.requestIdleCallback(() => setReady(true), {
-        timeout: 1500,
-      })
+      const id = window.requestIdleCallback(
+        () => setReady(document.getElementById('root')),
+        {
+          timeout: 1500,
+        },
+      )
       return () => window.cancelIdleCallback(id)
     }
-    const id = setTimeout(() => setReady(true), 200)
+    const id = setTimeout(() => setReady(document.getElementById('root')), 200)
     return () => clearTimeout(id)
   }, [])
 
   return ready ? (
     <SceneErrorBoundary>
       <Suspense fallback={null}>
-        <Scene />
+        <Scene eventSource={ready} />
       </Suspense>
     </SceneErrorBoundary>
   ) : null

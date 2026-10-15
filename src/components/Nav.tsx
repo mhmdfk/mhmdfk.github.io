@@ -41,7 +41,7 @@ export function Nav() {
   }, [open])
 
   return (
-    <header className="site-header">
+    <header className="site-header no-scene-hover">
       <nav className="container nav" aria-label={ui.navigation}>
         <a
           className="wordmark"

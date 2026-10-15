@@ -238,6 +238,14 @@ export const education: Education = {
 }
 
 export const ui = {
+  scene: {
+    desk: 'Desk · Experience',
+    sofa: 'Sofa · Tiraz',
+    corkboard: 'Corkboard · Huntrix',
+    shelf: 'Shelf · Matjari',
+    diploma: 'Diploma · About',
+    window: 'Window · Contact',
+  },
   skip: 'Skip to content',
   navigation: 'Main navigation',
   menu: 'Menu',

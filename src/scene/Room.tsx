@@ -1,3 +1,4 @@
+import { InteractiveObject } from './InteractiveObject'
 import { anchors, palette, room } from './layout'
 import { Block } from './primitives'
 import { Desk } from './objects/Desk'
@@ -29,48 +30,60 @@ export function Room() {
         size={[0.16, room.height, room.depth]}
         color={palette.wall}
       />
-      <group position={anchors.window.position}>
-        <Block
-          position={[0, 0, 0.02]}
-          size={[1.7, 1.9, 0.12]}
-          color={palette.wood}
-        />
-        <Block
-          position={[0, 0, 0.1]}
-          size={[1.46, 1.66, 0.04]}
-          color="#1d374b"
-          emissive="#203c55"
-        />
-        <mesh position={[0.35, 0.35, 0.14]} rotation={[Math.PI / 2, 0, 0]}>
-          <cylinderGeometry args={[0.21, 0.21, 0.02, 16]} />
-          <meshStandardMaterial
-            color={palette.paper}
-            emissive={palette.cool}
-            emissiveIntensity={0.6}
+      <InteractiveObject id="window">
+        <group position={anchors.window.position}>
+          <Block
+            position={[0, 0, 0.02]}
+            size={[1.7, 1.9, 0.12]}
+            color={palette.wood}
           />
-        </mesh>
-        <Block
-          position={[0, 0, 0.16]}
-          size={[0.06, 1.7, 0.08]}
-          color={palette.wood}
-        />
-        <Block
-          position={[0, 0, 0.16]}
-          size={[1.5, 0.06, 0.08]}
-          color={palette.wood}
-        />
-        <pointLight
-          position={[0, 0, 0.8]}
-          color={palette.cool}
-          intensity={2.5}
-          distance={5}
-        />
-      </group>
-      <Desk />
-      <SofaSet />
-      <Corkboard />
-      <Shelf />
-      <Diploma />
+          <Block
+            position={[0, 0, 0.1]}
+            size={[1.46, 1.66, 0.04]}
+            color="#1d374b"
+            emissive="#203c55"
+          />
+          <mesh position={[0.35, 0.35, 0.14]} rotation={[Math.PI / 2, 0, 0]}>
+            <cylinderGeometry args={[0.21, 0.21, 0.02, 16]} />
+            <meshStandardMaterial
+              color={palette.paper}
+              emissive={palette.cool}
+              emissiveIntensity={0.6}
+            />
+          </mesh>
+          <Block
+            position={[0, 0, 0.16]}
+            size={[0.06, 1.7, 0.08]}
+            color={palette.wood}
+          />
+          <Block
+            position={[0, 0, 0.16]}
+            size={[1.5, 0.06, 0.08]}
+            color={palette.wood}
+          />
+          <pointLight
+            position={[0, 0, 0.8]}
+            color={palette.cool}
+            intensity={2.5}
+            distance={5}
+          />
+        </group>
+      </InteractiveObject>
+      <InteractiveObject id="desk">
+        <Desk />
+      </InteractiveObject>
+      <InteractiveObject id="sofa">
+        <SofaSet />
+      </InteractiveObject>
+      <InteractiveObject id="corkboard">
+        <Corkboard />
+      </InteractiveObject>
+      <InteractiveObject id="shelf">
+        <Shelf />
+      </InteractiveObject>
+      <InteractiveObject id="diploma">
+        <Diploma />
+      </InteractiveObject>
     </group>
   )
 }

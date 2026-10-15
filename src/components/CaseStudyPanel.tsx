@@ -1,3 +1,4 @@
+import { openCaseStudy, registerCaseStudyOpener } from '../lib/caseStudyActions'
 import { scrollToId, setDialogScrollLocked } from '../lib/smoothScroll'
 import { useEffect, useRef, type RefObject } from 'react'
 import { projects, ui } from '../content/content'
@@ -50,11 +51,13 @@ export function CaseStudyPanel({ triggers }: Props) {
       dialog.querySelector<HTMLButtonElement>('button')?.focus()
     }
 
+    const unregisterOpener = registerCaseStudyOpener(open)
+
     const syncHash = () => {
       const project = projects.find(
         (item) => '#' + item.id === window.location.hash,
       )
-      if (project) open(project.id, false)
+      if (project) openCaseStudy(project.id, false)
       else close(false)
     }
 
@@ -62,7 +65,7 @@ export function CaseStudyPanel({ triggers }: Props) {
       const trigger = triggers.current[project.id]
       const dialog = dialogs.current[project.id]
       if (!dialog) continue
-      const onOpen = () => open(project.id, true)
+      const onOpen = () => openCaseStudy(project.id)
       const onClose = () => {
         if (active === project.id && !dialog.open) close(true)
       }
@@ -83,6 +86,7 @@ export function CaseStudyPanel({ triggers }: Props) {
     window.addEventListener('hashchange', syncHash)
     syncHash()
     return () => {
+      unregisterOpener()
       cleanups.forEach((cleanup) => cleanup())
       window.removeEventListener('popstate', syncHash)
       window.removeEventListener('hashchange', syncHash)

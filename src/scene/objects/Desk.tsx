@@ -1,3 +1,4 @@
+import { MonitorScreen } from './MonitorScreen'
 import { anchors, palette } from '../layout'
 import { Block, Blocks } from '../primitives'
 
@@ -26,12 +27,7 @@ export function Desk() {
         size={[1.4, 0.85, 0.12]}
         color={palette.metal}
       />
-      <Block
-        position={[0, 1.85, -0.17]}
-        size={[1.24, 0.69, 0.02]}
-        color={palette.cool}
-        emissive="#37677a"
-      />
+      <MonitorScreen />
       <Block
         position={[0, 1.25, 0.3]}
         size={[0.85, 0.05, 0.27]}
@@ -56,12 +52,6 @@ export function Desk() {
         position={[0, 0.08, 1.1]}
         size={[0.8, 0.1, 0.65]}
         color={palette.metal}
-      />
-      <pointLight
-        position={[0, 1.9, 0.2]}
-        color={palette.cool}
-        intensity={1.2}
-        distance={3}
       />
     </group>
   )
