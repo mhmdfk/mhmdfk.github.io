@@ -23,3 +23,6 @@ Desktop.ini
 # Private planning docs (kept local, never published)
 SPEC.md
 prompts/
+
+# Per-step notes written by the office employee (local only)
+OFFICE_NOTES.md
