@@ -7,7 +7,7 @@ export function About() {
         <h2 id="about-title">{ui.about.heading}</h2>
       </div>
       <div className="about-grid">
-        <p className="about-bio">{profile.pitch}</p>
+        <p className="about-bio">{profile.bio}</p>
         <div className="education">
           <p className="eyebrow">{ui.about.education}</p>
           <h3>{education.degree}</h3>

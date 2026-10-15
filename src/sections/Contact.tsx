@@ -38,12 +38,10 @@ export function Contact() {
           {ui.contact.github}
           <span aria-hidden="true">↗</span>
         </a>
-        {profile.links.linkedin !== 'TODO' && (
-          <a href={profile.links.linkedin}>
-            {ui.contact.linkedin}
-            <span aria-hidden="true">↗</span>
-          </a>
-        )}
+        <a href={profile.links.linkedin}>
+          {ui.contact.linkedin}
+          <span aria-hidden="true">↗</span>
+        </a>
         <a href={profile.cvUrl} download>
           {ui.hero.download}
           <span aria-hidden="true">↓</span>

@@ -2,6 +2,7 @@ export type Profile = {
   name: string
   title: string
   pitch: string
+  bio: string
   location: string
   email: string
   links: {
@@ -56,6 +57,7 @@ export const profile: Profile = {
   title: 'Full-Stack Software Engineer',
   pitch:
     'I build and ship production web apps end to end — Spring Boot and React/Next.js, data pipelines, and AI features — from API design to AWS.',
+  bio: "I'm a full-stack engineer who likes owning a feature from the database to the deploy. At Gauge Solutions I worked on a production ERP, from Kafka integrations to faster PostgreSQL queries, and on Tiraz I built the data pipeline and design flow behind a live AI product. I care about clean APIs, reliable systems and shipping things people actually use. I graduated in Software Engineering from JUST with a 3.99 GPA.",
   location: 'Dubai, UAE',
   email: 'mfaaak@hotmail.com',
   links: {
