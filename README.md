@@ -22,6 +22,20 @@ npm run dev
 - `npm run lint` — run ESLint; warnings fail the check.
 - `npm run format` — format project files with Prettier.
 
+## Deployment
+
+In the repository's **Settings → Pages**, set **Source** to **GitHub Actions** once.
+Every push to `main` installs dependencies, lints, builds, and deploys to
+https://mhmdfk.github.io. You can also run the workflow manually from the Actions
+tab. A lint or build failure prevents deployment. No secrets or tokens need to be
+configured.
+
+The build copies `dist/index.html` to `dist/404.html` for GitHub Pages. The site
+uses hash anchors without routing, so the same page is sufficient as a fallback.
+This runs in the build script so local and CI builds produce the same output,
+using Node's file API for compatibility with Windows and Linux. Vite also copies
+`public/.nojekyll` into `dist/`.
+
 ## TypeScript tooling
 
 The build uses TypeScript 7 via the `@typescript/native` npm alias. ESLint uses
