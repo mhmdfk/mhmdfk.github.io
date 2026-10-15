@@ -32,11 +32,13 @@ export function detectQuality(): SceneQuality {
     } catch {
       // Renderer details may be restricted by the browser.
     }
+    // Software WebGL renders on the CPU and blocks the main thread; the CSS
+    // backdrop serves these visitors better than a janky scene.
+    if (software) return 'off'
     return window.matchMedia('(pointer: coarse)').matches ||
       window.innerWidth < 768 ||
       (device.deviceMemory !== undefined && device.deviceMemory <= 4) ||
-      (device.hardwareConcurrency > 0 && device.hardwareConcurrency <= 4) ||
-      software
+      (device.hardwareConcurrency > 0 && device.hardwareConcurrency <= 4)
       ? 'low'
       : 'high'
   } catch {

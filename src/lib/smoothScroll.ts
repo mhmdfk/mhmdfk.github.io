@@ -1,6 +1,4 @@
 import Lenis from 'lenis'
-import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 let lenis: Lenis | null = null
 let dialogOpen = false
@@ -54,24 +52,21 @@ export function scrollToId(
 
 export function initSmoothScroll() {
   if (typeof window === 'undefined') return () => {}
-  gsap.registerPlugin(ScrollTrigger)
+  // Lenis runs its own rAF loop and writes the native scroll position, so the
+  // scene's ScrollTrigger (lazy-loaded with the 3D chunk) sees every update
+  // without GSAP having to ship in the main bundle.
   const motion = window.matchMedia('(prefers-reduced-motion: reduce)')
-  const tick = (time: number) => lenis?.raf(time * 1000)
   const configure = () => {
     reducedMotion = motion.matches
     motionListeners.forEach((listener) => listener(reducedMotion))
     lenis?.destroy()
     lenis = null
-    gsap.ticker.remove(tick)
-    gsap.ticker.lagSmoothing(500, 33)
     if (!reducedMotion) {
       lenis = new Lenis({
         duration: 0.8,
+        autoRaf: true,
         prevent: (node) => node instanceof HTMLDialogElement,
       })
-      lenis.on('scroll', ScrollTrigger.update)
-      gsap.ticker.add(tick)
-      gsap.ticker.lagSmoothing(0)
       if (dialogOpen) lenis.stop()
     }
   }
@@ -105,10 +100,7 @@ export function initSmoothScroll() {
   window.addEventListener('popstate', syncHash)
   motion.addEventListener('change', configure)
   void document.fonts.ready.then(() => {
-    if (!disposed) {
-      syncHash()
-      ScrollTrigger.refresh()
-    }
+    if (!disposed) syncHash()
   })
   return () => {
     disposed = true
@@ -116,8 +108,6 @@ export function initSmoothScroll() {
     window.removeEventListener('hashchange', syncHash)
     window.removeEventListener('popstate', syncHash)
     motion.removeEventListener('change', configure)
-    gsap.ticker.remove(tick)
-    gsap.ticker.lagSmoothing(500, 33)
     lenis?.destroy()
     lenis = null
   }

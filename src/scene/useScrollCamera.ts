@@ -75,7 +75,12 @@ export function useScrollCamera(
     })
     const refresh = () => ScrollTrigger.refresh()
     window.addEventListener('resize', refresh)
+    let disposed = false
+    void document.fonts.ready.then(() => {
+      if (!disposed) refresh()
+    })
     return () => {
+      disposed = true
       trigger.kill()
       window.removeEventListener('resize', refresh)
       unsubscribeMotion()

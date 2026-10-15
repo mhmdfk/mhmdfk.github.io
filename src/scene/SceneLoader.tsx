@@ -49,26 +49,50 @@ export function SceneLoader() {
 
   useEffect(() => {
     restoreOverride()
-    set({ detected: detectQuality() })
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)')
     const update = () => set({ detected: detectQuality() })
     motion.addEventListener('change', update)
     return () => motion.removeEventListener('change', update)
   }, [])
 
+  // Building the room costs seconds of main-thread work, so the decorative
+  // scene waits for the first interaction (or a few idle seconds) instead of
+  // competing with the content during load.
   useEffect(() => {
+    const events = [
+      'pointermove',
+      'pointerdown',
+      'wheel',
+      'touchstart',
+      'keydown',
+      'scroll',
+    ]
+    let idle: number | undefined
     const start = () => {
+      // Probing WebGL creates a throwaway context, which is expensive, so it
+      // runs here rather than during hydration.
+      set({ detected: detectQuality() })
       setReady(document.getElementById('root'))
       setLoadingHost(document.getElementById('scene-loading-slot'))
     }
-    if ('requestIdleCallback' in window) {
-      const id = window.requestIdleCallback(start, {
-        timeout: 1500,
-      })
-      return () => window.cancelIdleCallback(id)
+    const trigger = () => {
+      cancelTriggers()
+      if ('requestIdleCallback' in window)
+        idle = window.requestIdleCallback(start, { timeout: 1000 })
+      else start()
     }
-    const id = setTimeout(start, 200)
-    return () => clearTimeout(id)
+    const timer = setTimeout(trigger, 6000)
+    const cancelTriggers = () => {
+      clearTimeout(timer)
+      events.forEach((event) => window.removeEventListener(event, trigger))
+    }
+    events.forEach((event) =>
+      window.addEventListener(event, trigger, { once: true, passive: true }),
+    )
+    return () => {
+      cancelTriggers()
+      if (idle !== undefined) window.cancelIdleCallback(idle)
+    }
   }, [])
 
   useEffect(() => {
@@ -80,7 +104,7 @@ export function SceneLoader() {
     return () => clearTimeout(id)
   }, [tier])
 
-  const loading = tier !== 'off' && !loaded
+  const loading = tier !== 'off' && ready !== null && !loaded
   useEffect(() => {
     if (!loading) {
       const id = setTimeout(() => setAnnouncement(''), 0)
