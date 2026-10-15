@@ -4,6 +4,7 @@
 @import 'tailwindcss';
 @import './case-study.css';
 @import './scene.css';
+@import './micro-interactions.css';
 @import 'lenis/dist/lenis.css';
 
 @theme {

@@ -1,3 +1,4 @@
+import { MagneticButton } from '../components/MagneticButton'
 import { profile, ui } from '../content/content'
 export function Hero() {
   return (
@@ -12,14 +13,18 @@ export function Hero() {
       </h1>
       <p className="hero-pitch">{profile.pitch}</p>
       <div className="actions">
-        <a className="button button-primary" href={profile.cvUrl} download>
+        <MagneticButton
+          className="button button-primary"
+          href={profile.cvUrl}
+          download
+        >
           {ui.hero.download}
           <span aria-hidden="true">↓</span>
-        </a>
-        <a className="button" href="#contact">
+        </MagneticButton>
+        <MagneticButton className="button" href="#contact">
           {ui.hero.contact}
           <span aria-hidden="true">↗</span>
-        </a>
+        </MagneticButton>
       </div>
       <p className="location">
         <span aria-hidden="true">↳</span> {profile.location}

@@ -1,3 +1,5 @@
+import { LazyMotion, domAnimation } from 'motion/react'
+import { CustomCursor } from './components/CustomCursor'
 import { useEffect } from 'react'
 import { initSmoothScroll } from './lib/smoothScroll'
 import { SceneLoader } from './scene/SceneLoader'
@@ -15,7 +17,8 @@ export default function App() {
   useEffect(initSmoothScroll, [])
 
   return (
-    <>
+    <LazyMotion features={domAnimation} strict>
+      <CustomCursor />
       <SceneLoader />
       <a className="skip-link" href="#main">
         {ui.skip}
@@ -30,6 +33,6 @@ export default function App() {
         <Contact />
       </main>
       <Footer />
-    </>
+    </LazyMotion>
   )
 }

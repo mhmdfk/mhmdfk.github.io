@@ -1,3 +1,6 @@
+import { MagneticButton } from '../components/MagneticButton'
+import { ScrambleText } from '../components/ScrambleText'
+import { SectionEnter } from '../components/SectionEnter'
 import { useState } from 'react'
 import { profile, ui } from '../content/content'
 export function Contact() {
@@ -16,24 +19,28 @@ export function Contact() {
       className="section contact"
       aria-labelledby="contact-title"
     >
-      <p className="eyebrow">{ui.contact.label}</p>
-      <h2 id="contact-title">{ui.contact.heading}</h2>
-      <div className="email-row">
+      <SectionEnter>
+        <p className="eyebrow">{ui.contact.label}</p>
+        <h2 id="contact-title">
+          <ScrambleText>{ui.contact.heading}</ScrambleText>
+        </h2>
+      </SectionEnter>
+      <SectionEnter className="email-row">
         <a className="email" href={`mailto:${profile.email}`}>
           {profile.email}
         </a>
-        <button
+        <MagneticButton
           className="button copy-button"
           type="button"
           onClick={copyEmail}
         >
           {status === ui.contact.copied ? ui.contact.copied : ui.contact.copy}
-        </button>
-      </div>
+        </MagneticButton>
+      </SectionEnter>
       <p className="copy-status" role="status" aria-live="polite">
         {status}
       </p>
-      <div className="social-links">
+      <SectionEnter className="social-links">
         <a href={profile.links.github}>
           {ui.contact.github}
           <span aria-hidden="true">↗</span>
@@ -46,7 +53,7 @@ export function Contact() {
           {ui.hero.download}
           <span aria-hidden="true">↓</span>
         </a>
-      </div>
+      </SectionEnter>
     </section>
   )
 }

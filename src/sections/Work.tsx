@@ -1,3 +1,6 @@
+import { TiltCard } from '../components/TiltCard'
+import { ScrambleText } from '../components/ScrambleText'
+import { SectionEnter } from '../components/SectionEnter'
 import { useRef } from 'react'
 import { CaseStudyPanel } from '../components/CaseStudyPanel'
 import { projects, ui } from '../content/content'
@@ -5,13 +8,15 @@ export function Work() {
   const triggers = useRef<Record<string, HTMLButtonElement | null>>({})
   return (
     <section id="work" className="section" aria-labelledby="work-title">
-      <div className="section-heading">
+      <SectionEnter className="section-heading">
         <p className="eyebrow">{ui.work.label}</p>
-        <h2 id="work-title">{ui.work.heading}</h2>
-      </div>
-      <div className="project-grid">
+        <h2 id="work-title">
+          <ScrambleText>{ui.work.heading}</ScrambleText>
+        </h2>
+      </SectionEnter>
+      <SectionEnter className="project-grid">
         {projects.map((project, index) => (
-          <article
+          <TiltCard
             key={project.id}
             className="project-card"
             aria-labelledby={`${project.id}-title`}
@@ -53,9 +58,9 @@ export function Work() {
                 <span aria-hidden="true">↗</span>
               </a>
             </div>
-          </article>
+          </TiltCard>
         ))}
-      </div>
+      </SectionEnter>
       <CaseStudyPanel triggers={triggers} />
     </section>
   )
