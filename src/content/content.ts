@@ -238,6 +238,65 @@ export const education: Education = {
 }
 
 export const ui = {
+  commandPalette: {
+    title: 'Command palette',
+    open: 'Open command palette',
+    hint: '⌘K',
+    search: 'Search commands',
+    close: 'Close',
+    help: '↑ ↓ to select · Enter to run · Esc to close',
+    empty: 'No commands found.',
+    groups: {
+      sections: 'Go to section',
+      projects: 'Open case study',
+      actions: 'Actions',
+    },
+    sections: [
+      { id: 'top', label: 'Go to Top', keywords: 'home start hero' },
+      {
+        id: 'experience',
+        label: 'Go to Experience',
+        keywords: 'career employment jobs',
+      },
+      { id: 'work', label: 'Go to Work', keywords: 'projects portfolio' },
+      { id: 'about', label: 'Go to About', keywords: 'bio education' },
+      {
+        id: 'skills',
+        label: 'Go to Skills',
+        keywords: 'tools technologies toolkit',
+      },
+      { id: 'contact', label: 'Go to Contact', keywords: 'email social' },
+    ],
+    projects: [
+      {
+        id: 'tiraz',
+        label: 'Open Tiraz case study',
+        keywords: 'interior design furniture',
+      },
+      {
+        id: 'huntrix',
+        label: 'Open Huntrix case study',
+        keywords: 'recruitment hiring candidates',
+      },
+      {
+        id: 'matjari',
+        label: 'Open Matjari case study',
+        keywords: 'marketplace commerce shopping',
+      },
+    ] satisfies { id: Project['id']; label: string; keywords: string }[],
+    copy: { label: 'Copy email', keywords: 'contact clipboard address' },
+    cv: { label: 'Download CV', keywords: 'resume curriculum vitae pdf' },
+    github: { label: 'Open GitHub', keywords: 'code repositories profile' },
+    linkedin: {
+      label: 'Open LinkedIn',
+      keywords: 'professional social profile',
+    },
+    scene: {
+      enable: 'Enable 3D scene (automatic quality)',
+      disable: 'Disable 3D scene',
+      keywords: 'toggle room graphics motion performance',
+    },
+  },
   scene: {
     desk: 'Desk · Experience',
     sofa: 'Sofa · Tiraz',

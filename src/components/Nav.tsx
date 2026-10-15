@@ -1,3 +1,4 @@
+import { CommandPalette } from './CommandPalette'
 import { useEffect, useRef, useState } from 'react'
 import { profile, ui } from '../content/content'
 
@@ -75,6 +76,7 @@ export function Nav() {
             </a>
           ))}
         </div>
+        <CommandPalette />
       </nav>
     </header>
   )

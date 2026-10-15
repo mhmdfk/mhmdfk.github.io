@@ -3,6 +3,7 @@
 @import '@fontsource/space-grotesk/latin-500.css';
 @import 'tailwindcss';
 @import './case-study.css';
+@import './command-palette.css';
 @import './scene.css';
 @import './micro-interactions.css';
 @import 'lenis/dist/lenis.css';

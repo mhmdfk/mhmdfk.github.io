@@ -1,0 +1,117 @@
+.command-hint {
+  flex-shrink: 0;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: var(--color-surface);
+  color: var(--color-accent);
+  font-size: 0.8rem;
+}
+.command-palette {
+  width: min(36rem, calc(100% - 2.5rem));
+  max-width: none;
+  max-height: calc(100dvh - 4rem);
+  margin: 4rem auto auto;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-background);
+  color: var(--color-text);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.command-palette::backdrop {
+  background: #000b;
+}
+.command-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.command-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+.command-palette input {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.7rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+}
+.command-palette input::placeholder {
+  color: var(--color-muted);
+}
+.command-list {
+  max-height: min(24rem, 50dvh);
+  margin-top: 0.75rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.command-group {
+  padding: 0.75rem;
+  color: var(--color-muted);
+  font-size: 0.75rem;
+}
+.command-option {
+  display: block;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.75rem;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--color-text);
+  font-size: 0.85rem;
+  text-align: left;
+}
+.command-option[aria-selected='true'] {
+  border-color: var(--color-accent);
+  background: var(--color-surface);
+  color: var(--color-accent);
+}
+.command-option:hover {
+  background: var(--color-surface);
+}
+.command-help,
+.command-empty {
+  padding: 0.75rem 0.25rem 0;
+  color: var(--color-muted);
+  font-size: 0.75rem;
+}
+.command-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+@media (max-width: 767px) {
+  .nav:has(.command-hint) {
+    gap: 0.5rem;
+  }
+  .nav .menu-button {
+    margin-left: auto;
+    gap: 0.5rem;
+  }
+  .command-palette {
+    width: 100%;
+    margin-top: 0.75rem;
+    max-height: calc(100dvh - 1.5rem);
+    border-radius: 4px;
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  .nav:has(.command-hint),
+  .nav:has(.command-hint) .nav-links {
+    gap: 1rem;
+  }
+}

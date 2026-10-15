@@ -1,18 +1,10 @@
 import { MagneticButton } from '../components/MagneticButton'
 import { ScrambleText } from '../components/ScrambleText'
 import { SectionEnter } from '../components/SectionEnter'
-import { useState } from 'react'
+import { useCopyEmail } from '../lib/useCopyEmail'
 import { profile, ui } from '../content/content'
 export function Contact() {
-  const [status, setStatus] = useState('')
-  async function copyEmail() {
-    try {
-      await navigator.clipboard.writeText(profile.email)
-      setStatus(ui.contact.copied)
-    } catch {
-      setStatus(ui.contact.copyFailed)
-    }
-  }
+  const { status, copyEmail } = useCopyEmail()
   return (
     <section
       id="contact"
