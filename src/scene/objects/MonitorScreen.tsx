@@ -81,8 +81,8 @@ export function MonitorScreen() {
           color={palette.cool}
           ref={material}
           emissive="#ffffff"
-          emissiveIntensity={0.65}
-          roughness={0.6}
+          emissiveIntensity={2.2}
+          roughness={0.55}
         />
       </mesh>
       <pointLight

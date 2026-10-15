@@ -4,13 +4,13 @@ type CameraStop = { id: string; position: Point; target: Point }
 const offset = (point: Point, delta: Point): Point =>
   point.map((value, i) => value + delta[i]) as Point
 
-// Elevated positions keep the interpolated route above the blockout furniture.
+// Elevated positions keep the interpolated route above the furniture.
 export const cameraStops = [
   { id: 'top', position: [0, 7.5, 18], target: [0, 1.3, -0.6] },
   {
     id: 'experience',
-    position: offset(anchors.desk.position, [0, 3.4, 5.5]),
-    target: offset(anchors.desk.target, [0, 0.3, 0]),
+    position: offset(anchors.desk.position, [0.6, 3.2, 6.5]),
+    target: offset(anchors.desk.target, [-1, 0.3, 0]),
   },
   {
     id: 'tiraz',

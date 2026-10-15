@@ -5,6 +5,7 @@ export function Shelf() {
   return (
     <group position={anchors.shelf.position} rotation={[0, Math.PI / 2, 0]}>
       <Block
+        rounded
         position={[0, 1.45, 0.12]}
         size={[2.1, 2.9, 0.12]}
         color={palette.wood}
@@ -23,10 +24,17 @@ export function Shelf() {
         items={Array.from({ length: 12 }, (_, i) => ({
           position: [
             -0.78 + (i % 6) * 0.28,
-            1.35 + Math.floor(i / 6) * 0.85,
+            1.05 + Math.floor(i / 6) * 0.85 + (0.42 + (i % 4) * 0.09) / 2,
             0.42,
           ],
-          color: [palette.fabric, palette.accent, palette.paper][i % 3],
+          scale: [0.8 + (i % 3) * 0.15, (0.42 + (i % 4) * 0.09) / 0.55, 1],
+          color: [
+            palette.fabric,
+            palette.accent,
+            palette.paper,
+            '#b47c61',
+            '#778d99',
+          ][i % 5],
         }))}
         size={[0.18, 0.55, 0.36]}
         color="#ffffff"

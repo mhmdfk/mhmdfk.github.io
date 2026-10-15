@@ -3,6 +3,14 @@ import { HoverContext, sceneTargetAllowed, type Hover } from './interaction'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { Color } from 'three'
+import { ContactShadows, Environment, Lightformer } from '@react-three/drei'
+import {
+  Bloom,
+  EffectComposer,
+  ToneMapping,
+  Vignette,
+} from '@react-three/postprocessing'
+import { ToneMappingMode } from 'postprocessing'
 import { Room } from './Room'
 import { palette } from './layout'
 import { cameraStops } from './cameraPath'
@@ -65,7 +73,8 @@ export default function Scene({ eventSource }: { eventSource: HTMLElement }) {
           <Canvas
             eventSource={eventSource}
             eventPrefix="client"
-            dpr={[1, 2]}
+            shadows
+            dpr={[1, 1.5]}
             camera={{
               position: cameraStops[0].position,
               fov: 42,
@@ -80,16 +89,68 @@ export default function Scene({ eventSource }: { eventSource: HTMLElement }) {
               )
             }}
           >
-            <ambientLight color="#a3bed0" intensity={0.45} />
+            <ambientLight color="#c2d5c9" intensity={0.3} />
             <directionalLight
-              position={[1, 7, 6]}
-              color="#e3e4d4"
+              position={[-3, 7, 4]}
+              castShadow
+              shadow-mapSize={[1024, 1024]}
+              shadow-camera-left={-7}
+              shadow-camera-right={7}
+              shadow-camera-top={7}
+              shadow-camera-bottom={-7}
+              shadow-camera-near={1}
+              shadow-camera-far={22}
+              shadow-normalBias={0.035}
+              shadow-bias={-0.0002}
+              color="#ffdfb5"
               intensity={2}
             />
+            <Environment frames={1} resolution={64} environmentIntensity={0.45}>
+              <Lightformer
+                position={[0, 6, 0]}
+                rotation={[Math.PI / 2, 0, 0]}
+                scale={[8, 8, 1]}
+                color="#ffe1b8"
+                intensity={2}
+              />
+              <Lightformer
+                position={[-4, 2, 1]}
+                rotation={[0, Math.PI / 2, 0]}
+                scale={[4, 3, 1]}
+                color={palette.accent}
+                intensity={1.5}
+              />
+              <Lightformer
+                position={[0, 3, -4]}
+                scale={[3, 2, 1]}
+                color={palette.cool}
+                intensity={2}
+              />
+            </Environment>
+            <EffectComposer multisampling={0} enableNormalPass={false}>
+              <Bloom
+                mipmapBlur
+                intensity={0.12}
+                luminanceThreshold={1}
+                luminanceSmoothing={0.15}
+              />
+              <Vignette eskil={false} offset={0.2} darkness={0.3} />
+              <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
+            </EffectComposer>
             <ScrollCamera />
             <HoverContext.Provider value={{ hover, reportHover: setHover }}>
               <Room />
             </HoverContext.Provider>
+            <ContactShadows
+              position={[0, 0.03, 0]}
+              scale={20}
+              resolution={256}
+              frames={1}
+              opacity={0.35}
+              blur={2}
+              far={3}
+              color="#101b16"
+            />
             <FirstFrame onReady={reveal} />
           </Canvas>
         )}
