@@ -1,0 +1,17 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-background: #0b1018;
+  --color-surface: #151d2b;
+  --color-text: #edf2f7;
+  --color-muted: #a0aec0;
+  --color-accent: #80cbc4;
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+    background-color: var(--color-background);
+    color: var(--color-text);
+  }
+}

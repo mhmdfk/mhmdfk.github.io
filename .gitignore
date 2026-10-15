@@ -1,0 +1,25 @@
+node_modules/
+dist/
+dist-ssr/
+.env*
+*.local
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editor files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*~
+
+# Private planning docs (kept local, never published)
+SPEC.md
+prompts/
