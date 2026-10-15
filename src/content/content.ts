@@ -60,7 +60,7 @@ export const profile: Profile = {
   email: 'mfaaak@hotmail.com',
   links: {
     github: 'https://github.com/mhmdfk',
-    linkedin: 'TODO',
+    linkedin: 'https://www.linkedin.com/in/mohammad-fawzi-asad-/',
   },
   cvUrl: '/Mohammad_Asad_CV.pdf',
 }
@@ -141,7 +141,7 @@ export const projects: Project[] = [
     name: 'Huntrix',
     tagline: 'AI recruitment assistant',
     liveUrl: 'https://huntrixai.com',
-    role: 'TODO',
+    role: 'Full-stack engineer',
     stack: [
       'Next.js',
       'TypeScript',
