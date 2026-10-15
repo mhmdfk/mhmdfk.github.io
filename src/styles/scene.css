@@ -1,0 +1,42 @@
+.scene {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: var(--color-background);
+}
+.scene canvas {
+  opacity: 0;
+  transition: opacity 900ms ease;
+}
+.scene.is-ready canvas {
+  opacity: 1;
+}
+.hero > *,
+.section-heading,
+.experience-meta,
+.experience-body,
+.about-bio,
+.education,
+.skill-group,
+.contact > :not(.section-heading),
+.footer > * {
+  background: #101413c9;
+  box-shadow: 0 0 1.5rem 0.7rem #101413c9;
+  backdrop-filter: blur(8px);
+  border-radius: 4px;
+}
+.project-card {
+  background: #1b2421df;
+  backdrop-filter: blur(8px);
+}
+.hero > *,
+.section-heading {
+  width: fit-content;
+  max-width: 100%;
+}
+@media (prefers-reduced-motion: reduce) {
+  .scene canvas {
+    transition: none;
+  }
+}

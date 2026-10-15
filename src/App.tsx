@@ -1,3 +1,4 @@
+import { SceneLoader } from './scene/SceneLoader'
 import { Nav } from './components/Nav'
 import { ui } from './content/content'
 import { Hero } from './sections/Hero'
@@ -11,6 +12,7 @@ import { Footer } from './sections/Footer'
 export default function App() {
   return (
     <>
+      <SceneLoader />
       <a className="skip-link" href="#main">
         {ui.skip}
       </a>
