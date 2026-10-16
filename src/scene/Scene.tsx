@@ -5,11 +5,9 @@ import { ui } from '../content/content'
 import { HoverContext, sceneTargetAllowed, type Hover } from './interaction'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { Color } from 'three'
+import { Color, HalfFloatType, WebGLRenderTarget } from 'three'
 import {
   ContactShadows,
-  Environment,
-  Lightformer,
   PerformanceMonitor,
   useProgress,
 } from '@react-three/drei'
@@ -104,6 +102,43 @@ function LoadingProgress({
   return null
 }
 
+// Queues every shader compile up front and waits for them without blocking the
+// main thread (KHR_parallel_shader_compile). Rendering only starts afterwards,
+// so the first frames don't stall on synchronous compile checks.
+// With postprocessing the scene is drawn into an offscreen target, which needs
+// different shader variants (no tone mapping, linear output), so compile those.
+function Precompile({
+  offscreen,
+  onDone,
+}: {
+  offscreen: boolean
+  onDone: () => void
+}) {
+  const gl = useThree((state) => state.gl)
+  const scene = useThree((state) => state.scene)
+  const camera = useThree((state) => state.camera)
+  useEffect(() => {
+    let cancelled = false
+    const target = offscreen
+      ? new WebGLRenderTarget(1, 1, { type: HalfFloatType })
+      : null
+    const previous = gl.getRenderTarget()
+    gl.setRenderTarget(target)
+    const compiling = gl.compileAsync(scene, camera)
+    gl.setRenderTarget(previous)
+    compiling
+      .catch(() => {})
+      .then(() => {
+        target?.dispose()
+        if (!cancelled) onDone()
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [gl, scene, camera, offscreen, onDone])
+  return null
+}
+
 function FirstFrame({ onReady }: { onReady: () => void }) {
   const frame = useRef<number | null>(null)
   useEffect(
@@ -139,6 +174,8 @@ export default function Scene({
     else setStage(stage + 1)
   }
   const [visible, setVisible] = useState(false)
+  const [compiled, setCompiled] = useState(false)
+  const markCompiled = useCallback(() => setCompiled(true), [])
   const [hover, setHover] = useState<Hover>(null)
   useEffect(() => {
     const root = eventSource
@@ -211,28 +248,10 @@ export default function Scene({
               color="#ffdfb5"
               intensity={2}
             />
-            <Environment frames={1} resolution={64} environmentIntensity={0.45}>
-              <Lightformer
-                position={[0, 6, 0]}
-                rotation={[Math.PI / 2, 0, 0]}
-                scale={[8, 8, 1]}
-                color="#ffe1b8"
-                intensity={2}
-              />
-              <Lightformer
-                position={[-4, 2, 1]}
-                rotation={[0, Math.PI / 2, 0]}
-                scale={[4, 3, 1]}
-                color={palette.accent}
-                intensity={1.5}
-              />
-              <Lightformer
-                position={[0, 3, -4]}
-                scale={[3, 2, 1]}
-                color={palette.cool}
-                intensity={2}
-              />
-            </Environment>
+            {/* Soft fill that the reflection environment used to provide: warm
+                from the ceiling panel above, dark green bounce from the floor.
+                Cheaper than <Environment>, which compiles its own shaders at mount. */}
+            <hemisphereLight args={['#ffe1b8', '#1b2a22', 0.55]} />
             {full && (
               <EffectComposer multisampling={0} enableNormalPass={false}>
                 <Bloom
@@ -245,7 +264,9 @@ export default function Scene({
                 <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
               </EffectComposer>
             )}
-            <SceneRuntime tier={tier} stage={stage} onDecline={decline} />
+            {compiled && (
+              <SceneRuntime tier={tier} stage={stage} onDecline={decline} />
+            )}
             <ScrollCamera intro={intro} tier={tier} />
             <HoverContext.Provider value={{ hover, reportHover: setHover }}>
               <Room />
@@ -260,7 +281,11 @@ export default function Scene({
               far={3}
               color="#101b16"
             />
-            <FirstFrame onReady={reveal} />
+            {compiled ? (
+              <FirstFrame onReady={reveal} />
+            ) : (
+              <Precompile offscreen={full} onDone={markCompiled} />
+            )}
           </Canvas>
         )}
       </div>
