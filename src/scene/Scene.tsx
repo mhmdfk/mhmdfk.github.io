@@ -3,7 +3,13 @@ import type { SceneQuality } from './quality'
 import { set as setSceneQuality } from '../state/sceneQuality'
 import { ui } from '../content/content'
 import { HoverContext, sceneTargetAllowed, type Hover } from './interaction'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import {
+  type ComponentType,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Color, HalfFloatType, WebGLRenderTarget } from 'three'
 import {
@@ -11,13 +17,6 @@ import {
   PerformanceMonitor,
   useProgress,
 } from '@react-three/drei'
-import {
-  Bloom,
-  EffectComposer,
-  ToneMapping,
-  Vignette,
-} from '@react-three/postprocessing'
-import { ToneMappingMode } from 'postprocessing'
 import { Room } from './Room'
 import { palette } from './layout'
 import { cameraStops } from './cameraPath'
@@ -176,6 +175,23 @@ export default function Scene({
   const [visible, setVisible] = useState(false)
   const [compiled, setCompiled] = useState(false)
   const markCompiled = useCallback(() => setCompiled(true), [])
+  // The room mounts in stages; shaders are compiled once everything is in.
+  const [roomMounted, setRoomMounted] = useState(false)
+  const markRoomMounted = useCallback(() => setRoomMounted(true), [])
+  const [Effects, setEffects] = useState<ComponentType | null>(null)
+  useEffect(() => {
+    if (!full) return
+    let cancelled = false
+    import('./Effects').then((module) => {
+      if (!cancelled) setEffects(() => module.default)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [full])
+  // Postprocessing changes which shader variants are needed, so on the full
+  // tier wait for it before precompiling.
+  const readyToCompile = roomMounted && (!full || Effects !== null)
   const [hover, setHover] = useState<Hover>(null)
   useEffect(() => {
     const root = eventSource
@@ -252,39 +268,32 @@ export default function Scene({
                 from the ceiling panel above, dark green bounce from the floor.
                 Cheaper than <Environment>, which compiles its own shaders at mount. */}
             <hemisphereLight args={['#ffe1b8', '#1b2a22', 0.55]} />
-            {full && (
-              <EffectComposer multisampling={0} enableNormalPass={false}>
-                <Bloom
-                  mipmapBlur
-                  intensity={0.12}
-                  luminanceThreshold={1}
-                  luminanceSmoothing={0.15}
-                />
-                <Vignette eskil={false} offset={0.2} darkness={0.3} />
-                <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
-              </EffectComposer>
-            )}
+            {full && Effects && <Effects />}
             {compiled && (
               <SceneRuntime tier={tier} stage={stage} onDecline={decline} />
             )}
             <ScrollCamera intro={intro} tier={tier} />
             <HoverContext.Provider value={{ hover, reportHover: setHover }}>
-              <Room />
+              <Room onMounted={markRoomMounted} />
             </HoverContext.Provider>
-            <ContactShadows
-              position={[0, 0.03, 0]}
-              scale={20}
-              resolution={256}
-              frames={1}
-              opacity={0.35}
-              blur={2}
-              far={3}
-              color="#101b16"
-            />
+            {full && (
+              <ContactShadows
+                position={[0, 0.03, 0]}
+                scale={20}
+                resolution={256}
+                frames={1}
+                opacity={0.35}
+                blur={2}
+                far={3}
+                color="#101b16"
+              />
+            )}
             {compiled ? (
               <FirstFrame onReady={reveal} />
             ) : (
-              <Precompile offscreen={full} onDone={markCompiled} />
+              readyToCompile && (
+                <Precompile offscreen={full} onDone={markCompiled} />
+              )
             )}
           </Canvas>
         )}

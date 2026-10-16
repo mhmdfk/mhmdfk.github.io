@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { RoomDetails } from './RoomDetails'
 import { InteractiveObject } from './InteractiveObject'
 import { anchors, palette, room } from './layout'
@@ -8,10 +9,24 @@ import { Corkboard } from './objects/Corkboard'
 import { Shelf } from './objects/Shelf'
 import { Diploma } from './objects/Diploma'
 
-export function Room() {
+const STAGES = 4
+
+// Mounting the whole room in one go is a single long task on slow phones.
+// Mount it one group per animation frame instead, so each stage is its own
+// short task, then report back so shaders can be compiled.
+export function Room({ onMounted }: { onMounted: () => void }) {
+  const [stage, setStage] = useState(0)
+  useEffect(() => {
+    if (stage >= STAGES) {
+      onMounted()
+      return
+    }
+    const frame = requestAnimationFrame(() => setStage(stage + 1))
+    return () => cancelAnimationFrame(frame)
+  }, [stage, onMounted])
+
   return (
     <group>
-      <RoomDetails />
       <Block
         castShadow={false}
         position={[0, -0.12, 0]}
@@ -80,21 +95,32 @@ export function Room() {
           />
         </group>
       </InteractiveObject>
-      <InteractiveObject id="desk">
-        <Desk />
-      </InteractiveObject>
-      <InteractiveObject id="sofa">
-        <SofaSet />
-      </InteractiveObject>
-      <InteractiveObject id="corkboard">
-        <Corkboard />
-      </InteractiveObject>
-      <InteractiveObject id="shelf">
-        <Shelf />
-      </InteractiveObject>
-      <InteractiveObject id="diploma">
-        <Diploma />
-      </InteractiveObject>
+      {stage >= 1 && (
+        <>
+          <InteractiveObject id="desk">
+            <Desk />
+          </InteractiveObject>
+          <InteractiveObject id="shelf">
+            <Shelf />
+          </InteractiveObject>
+        </>
+      )}
+      {stage >= 2 && (
+        <InteractiveObject id="sofa">
+          <SofaSet />
+        </InteractiveObject>
+      )}
+      {stage >= 3 && (
+        <>
+          <InteractiveObject id="corkboard">
+            <Corkboard />
+          </InteractiveObject>
+          <InteractiveObject id="diploma">
+            <Diploma />
+          </InteractiveObject>
+        </>
+      )}
+      {stage >= 4 && <RoomDetails />}
     </group>
   )
 }
