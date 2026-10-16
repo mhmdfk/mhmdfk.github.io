@@ -86,16 +86,6 @@ export function SofaSet() {
           [0.65, 1.35].map((z) => ({ position: [x, 0.3, z] })),
         )}
       />
-      <group ref={catalogue}>
-        <Blocks
-          size={[0.48, 0.64, 0.035]}
-          color={palette.accent}
-          items={Array.from({ length: 5 }, (_, i) => ({
-            position: [-0.9 + i * 0.45, 1.5 + (i % 2) * 0.28, 0.8],
-            rotation: [0, (i - 2) * 0.12, (i - 2) * -0.08],
-          }))}
-        />
-      </group>
       <Block
         rounded
         position={[1.8, 1.2, -1.2]}
