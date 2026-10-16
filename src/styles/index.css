@@ -621,3 +621,19 @@ h3 {
     transition: none !important;
   }
 }
+
+/* Long nav jumps cut through a curtain instead of flying past every section. */
+.jump-curtain {
+  position: fixed;
+  inset: 0;
+  /* Under the sticky header (20) so the nav stays still during a cut. */
+  z-index: 15;
+  background: var(--color-background);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 320ms ease;
+}
+.jump-curtain.is-covering {
+  opacity: 1;
+  transition-duration: 180ms;
+}

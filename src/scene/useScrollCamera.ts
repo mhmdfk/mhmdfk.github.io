@@ -5,7 +5,11 @@ import { useFrame } from '@react-three/fiber'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { MathUtils, PerspectiveCamera, Vector3 } from 'three'
-import { sectionTop, subscribeReducedMotion } from '../lib/smoothScroll'
+import {
+  sectionTop,
+  subscribeReducedMotion,
+  takeCameraSnap,
+} from '../lib/smoothScroll'
 import { cameraAt, cameraStops } from './cameraPath'
 
 export function useScrollCamera(
@@ -110,7 +114,7 @@ export function useScrollCamera(
     ) {
       intro.skip()
     }
-    const snap = intro.takeSnap()
+    const snap = intro.takeSnap() || takeCameraSnap()
     if (snap) updateProgress.current()
     const value = reduced.current
       ? Math.round(progress.current * (cameraStops.length - 1)) /

@@ -11,15 +11,29 @@ export function Nav() {
     const sections = ['top', ...ui.nav.map(({ id }) => id)]
       .map((id) => document.getElementById(id))
       .filter((section): section is HTMLElement => section !== null)
+    // The last section can't scroll to the top of the viewport, so at the very
+    // bottom of the page it is the active one.
+    const atBottom = () =>
+      window.scrollY + window.innerHeight >=
+      document.documentElement.scrollHeight - 2
+    const last = sections[sections.length - 1].id
     const observer = new IntersectionObserver(
       (entries) => {
+        if (atBottom()) return setActive(last)
         const visible = entries.filter((entry) => entry.isIntersecting)
         if (visible.length) setActive(visible[0].target.id)
       },
       { rootMargin: '-15% 0px -60% 0px', threshold: 0 },
     )
     sections.forEach((section) => observer.observe(section))
-    return () => observer.disconnect()
+    const onScroll = () => {
+      if (atBottom()) setActive(last)
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('scroll', onScroll)
+    }
   }, [])
 
   useEffect(() => {

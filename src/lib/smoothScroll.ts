@@ -43,6 +43,50 @@ export function setSplashScrollLocked(locked: boolean) {
   else lenis?.start()
 }
 
+// Jumps further than this (in viewport heights) cut through a curtain instead
+// of flying past every section in between.
+const NEAR = 1.2
+const CURTAIN_IN_MS = 180
+let cutting = false
+let curtain: HTMLDivElement | null = null
+let cameraSnapPending = false
+
+// Read once by the scroll camera: true right after an instant jump, so it moves
+// straight to the new framing instead of easing across the whole room.
+export function takeCameraSnap() {
+  const snap = cameraSnapPending
+  cameraSnapPending = false
+  return snap
+}
+
+function jumpTo(top: number) {
+  if (lenis) lenis.scrollTo(top, { immediate: true, force: true })
+  else window.scrollTo({ top, behavior: 'instant' })
+  cameraSnapPending = true
+}
+
+function cutTo(top: number) {
+  if (cutting) return
+  cutting = true
+  if (!curtain) {
+    curtain = document.createElement('div')
+    curtain.className = 'jump-curtain'
+    curtain.setAttribute('aria-hidden', 'true')
+  }
+  if (!curtain.isConnected) document.body.append(curtain)
+  curtain.classList.add('is-covering')
+  window.setTimeout(() => {
+    jumpTo(top)
+    // Two frames: one for the scroll and camera snap, one to paint them.
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        curtain?.classList.remove('is-covering')
+        cutting = false
+      }),
+    )
+  }, CURTAIN_IN_MS)
+}
+
 export function scrollToId(
   id: string,
   { updateHash = true, immediate = false } = {},
@@ -53,8 +97,10 @@ export function scrollToId(
   const top = sectionTop(id)
   if (updateHash && window.location.hash !== '#' + id)
     window.history.pushState(null, '', '#' + id)
-  if (lenis) lenis.scrollTo(top, { immediate })
-  else window.scrollTo({ top, behavior: 'instant' })
+  const screens = Math.abs(top - window.scrollY) / window.innerHeight
+  if (immediate || !lenis) jumpTo(top)
+  else if (screens > NEAR) cutTo(top)
+  else lenis.scrollTo(top, { duration: 0.6 + 0.4 * screens })
   if (id === 'main') element.focus({ preventScroll: true })
 }
 
