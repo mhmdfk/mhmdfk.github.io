@@ -1,7 +1,30 @@
+import { execSync } from 'node:child_process'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vite'
 import { seo } from './src/content/content.ts'
+import {
+  buildLlmsTxt,
+  buildSitemap,
+  buildStructuredData,
+} from './src/content/seo.ts'
+
+// Last commit that touched the content, so dateModified/lastmod only move when
+// the profile actually changes. Falls back to now outside a git checkout.
+function contentDate() {
+  try {
+    const date = execSync(
+      'git log -1 --format=%cI -- src/content/content.ts',
+      { encoding: 'utf8' },
+    ).trim()
+    if (date) return new Date(date).toISOString()
+  } catch {
+    // not a git checkout
+  }
+  return new Date().toISOString()
+}
+
+const date = contentDate()
 
 export default defineConfig({
   base: '/',
@@ -10,6 +33,19 @@ export default defineConfig({
     tailwindcss(),
     {
       name: 'portfolio-metadata',
+      generateBundle() {
+        if (this.environment.config.build.ssr) return
+        this.emitFile({
+          type: 'asset',
+          fileName: 'llms.txt',
+          source: buildLlmsTxt(),
+        })
+        this.emitFile({
+          type: 'asset',
+          fileName: 'sitemap.xml',
+          source: buildSitemap(date),
+        })
+      },
       transformIndexHtml(html) {
         const values: Record<string, string> = {
           __SEO_TITLE__: seo.title,
@@ -26,7 +62,10 @@ export default defineConfig({
               .replaceAll('"', '&quot;'),
           )
           .replace('__PERSON_JSON_LD__', () =>
-            JSON.stringify(seo.person).replaceAll('<', '\\u003c'),
+            JSON.stringify(buildStructuredData(date)).replaceAll(
+              '<',
+              '\\u003c',
+            ),
           )
       },
     },

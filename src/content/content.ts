@@ -1,5 +1,6 @@
 export type Profile = {
   name: string
+  fullName: string
   title: string
   pitch: string
   bio: string
@@ -48,17 +49,21 @@ export type SkillGroup = {
 export type Education = {
   degree: string
   school: string
+  countryCode: string
   start: string
   end: string
   note: string
 }
 
+const fullName = 'Mohammad Fawzi Asad'
+
 export const profile: Profile = {
   name: 'Mohammad Asad',
+  fullName,
   title: 'Full-Stack Software Engineer',
   pitch:
     'I build and ship production web apps end to end — Spring Boot and React/Next.js, data pipelines, and AI features — from API design to AWS.',
-  bio: "I'm a full-stack engineer who likes owning a feature from the database to the deploy. At Gauge Solutions I worked on a production ERP, from Kafka integrations to faster PostgreSQL queries, and on Tiraz I built the data pipeline and design flow behind a live AI product. I care about clean APIs, reliable systems and shipping things people actually use. I graduated in Software Engineering from JUST with a 3.99 GPA.",
+  bio: `I'm ${fullName}, a full-stack software engineer based in Dubai, UAE. At Gauge Solutions in Amman, Jordan, I worked on a production ERP, from Kafka integrations to faster PostgreSQL queries, and on Tiraz I built the data pipeline and design flow behind a live AI product. I care about clean APIs, reliable systems and shipping things people actually use. I graduated in Software Engineering from Jordan University of Science and Technology with a 3.99 GPA.`,
   location: 'Dubai, UAE',
   email: 'mfaaak@hotmail.com',
   links: {
@@ -69,25 +74,19 @@ export const profile: Profile = {
 }
 
 export const seo = {
-  title: `${profile.name} — ${profile.title}`,
-  description:
-    'Mohammad Asad is a full-stack engineer building production web apps with Spring Boot, React and AI features.',
+  title: `${profile.fullName} — ${profile.title} in Dubai`,
+  description: `${profile.fullName} is a full-stack software engineer in Dubai, UAE, with experience in Jordan, building apps with Spring Boot, React/Next.js and AI.`,
   url: 'https://mhmdfk.github.io/',
-  imageAlt: 'Mohammad Asad — Full-Stack Software Engineer portfolio',
-  person: {
-    '@context': 'https://schema.org',
-    '@type': 'Person',
-    name: profile.name,
-    jobTitle: profile.title,
-    url: 'https://mhmdfk.github.io/',
-    sameAs: [profile.links.github, profile.links.linkedin],
-    email: profile.email,
-    address: {
-      '@type': 'PostalAddress',
-      addressLocality: 'Dubai',
-      addressCountry: 'AE',
-    },
-  },
+  imageAlt: `${profile.fullName} — ${profile.title} portfolio`,
+  givenName: 'Mohammad',
+  familyName: 'Asad',
+  alternateNames: [fullName, 'Mohammad Fawzi'],
+  city: 'Dubai',
+  countryCode: 'AE',
+  workLocations: [
+    { '@type': 'City', name: 'Dubai' },
+    { '@type': 'Country', name: 'Jordan' },
+  ],
 }
 
 export const experiences: Experience[] = [
@@ -254,6 +253,7 @@ export const skillGroups: SkillGroup[] = [
 export const education: Education = {
   degree: 'B.Sc. Software Engineering',
   school: 'Jordan University of Science and Technology',
+  countryCode: 'JO',
   start: 'Oct 2021',
   end: 'Jun 2025',
   note: 'GPA 3.99 / 4.0',

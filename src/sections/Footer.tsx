@@ -3,7 +3,7 @@ export function Footer() {
   return (
     <footer className="container footer">
       <p>
-        {profile.name}
+        {profile.fullName}
         <span aria-hidden="true"> / </span>
         <span>{profile.title}</span>
       </p>
