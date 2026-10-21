@@ -1,4 +1,3 @@
-import { ScrambleText } from '../components/ScrambleText'
 import { SectionEnter } from '../components/SectionEnter'
 import { education, profile, ui } from '../content/content'
 export function About() {
@@ -6,9 +5,7 @@ export function About() {
     <section id="about" className="section" aria-labelledby="about-title">
       <SectionEnter className="section-heading">
         <p className="eyebrow">{ui.about.label}</p>
-        <h2 id="about-title">
-          <ScrambleText>{ui.about.heading}</ScrambleText>
-        </h2>
+        <h2 id="about-title">{ui.about.heading}</h2>
       </SectionEnter>
       <SectionEnter className="about-grid">
         <p className="about-bio">{profile.bio}</p>

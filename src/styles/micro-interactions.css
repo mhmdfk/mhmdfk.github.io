@@ -1,14 +1,3 @@
-.scramble-text {
-  position: relative;
-  display: inline-block;
-  max-width: 100%;
-}
-.scramble-visual {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
 .project-card {
   position: relative;
 }
@@ -36,10 +25,6 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .scramble-text > span:first-child {
-    opacity: 1 !important;
-  }
-  .scramble-visual,
   .card-highlight {
     display: none;
   }

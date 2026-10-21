@@ -1,4 +1,3 @@
-import { ScrambleText } from '../components/ScrambleText'
 import { SectionEnter } from '../components/SectionEnter'
 import { experiences, ui } from '../content/content'
 export function Experience() {
@@ -10,9 +9,7 @@ export function Experience() {
     >
       <SectionEnter className="section-heading">
         <p className="eyebrow">{ui.experience.label}</p>
-        <h2 id="experience-title">
-          <ScrambleText>{ui.experience.heading}</ScrambleText>
-        </h2>
+        <h2 id="experience-title">{ui.experience.heading}</h2>
       </SectionEnter>
       <SectionEnter>
         <ol className="timeline">

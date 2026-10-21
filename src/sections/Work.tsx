@@ -1,5 +1,4 @@
 import { TiltCard } from '../components/TiltCard'
-import { ScrambleText } from '../components/ScrambleText'
 import { SectionEnter } from '../components/SectionEnter'
 import { useRef } from 'react'
 import { CaseStudyPanel } from '../components/CaseStudyPanel'
@@ -10,9 +9,7 @@ export function Work() {
     <section id="work" className="section" aria-labelledby="work-title">
       <SectionEnter className="section-heading">
         <p className="eyebrow">{ui.work.label}</p>
-        <h2 id="work-title">
-          <ScrambleText>{ui.work.heading}</ScrambleText>
-        </h2>
+        <h2 id="work-title">{ui.work.heading}</h2>
       </SectionEnter>
       <SectionEnter className="project-grid">
         {projects.map((project, index) => (

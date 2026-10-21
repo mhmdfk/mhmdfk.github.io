@@ -1,4 +1,3 @@
-import { ScrambleText } from '../components/ScrambleText'
 import { SectionEnter } from '../components/SectionEnter'
 import { skillGroups, ui } from '../content/content'
 export function Skills() {
@@ -6,9 +5,7 @@ export function Skills() {
     <section id="skills" className="section" aria-labelledby="skills-title">
       <SectionEnter className="section-heading">
         <p className="eyebrow">{ui.skills.label}</p>
-        <h2 id="skills-title">
-          <ScrambleText>{ui.skills.heading}</ScrambleText>
-        </h2>
+        <h2 id="skills-title">{ui.skills.heading}</h2>
       </SectionEnter>
       <SectionEnter className="skills-grid">
         {skillGroups.map((group) => (

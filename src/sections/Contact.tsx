@@ -1,5 +1,4 @@
 import { MagneticButton } from '../components/MagneticButton'
-import { ScrambleText } from '../components/ScrambleText'
 import { SectionEnter } from '../components/SectionEnter'
 import { useCopyEmail } from '../lib/useCopyEmail'
 import { profile, ui } from '../content/content'
@@ -13,9 +12,7 @@ export function Contact() {
     >
       <SectionEnter>
         <p className="eyebrow">{ui.contact.label}</p>
-        <h2 id="contact-title">
-          <ScrambleText>{ui.contact.heading}</ScrambleText>
-        </h2>
+        <h2 id="contact-title">{ui.contact.heading}</h2>
       </SectionEnter>
       <SectionEnter className="email-row">
         <a className="email" href={`mailto:${profile.email}`}>
