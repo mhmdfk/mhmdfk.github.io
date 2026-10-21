@@ -62,7 +62,7 @@ export const profile: Profile = {
   fullName,
   title: 'Full-Stack Software Engineer',
   pitch:
-    'I build and ship production web apps end to end — Spring Boot and React/Next.js, data pipelines, and AI features — from API design to AWS.',
+    'I build and ship production web apps end to end: Spring Boot and React/Next.js, data pipelines, and AI features, from API design to AWS.',
   bio: `I'm ${fullName}, a full-stack software engineer based in Dubai, UAE. At Gauge Solutions in Amman, Jordan, I worked on a production ERP, from Kafka integrations to faster PostgreSQL queries, and on Tiraz I built the data pipeline and design flow behind a live AI product. I care about clean APIs, reliable systems and shipping things people actually use. I graduated in Software Engineering from Jordan University of Science and Technology with a 3.99 GPA.`,
   location: 'Dubai, UAE',
   email: 'mfaaak@hotmail.com',
@@ -74,7 +74,7 @@ export const profile: Profile = {
 }
 
 export const seo = {
-  title: `${profile.fullName} — ${profile.title} in Dubai`,
+  title: `${profile.fullName} | ${profile.title} in Dubai`,
   description: `${profile.fullName} is a full-stack software engineer in Dubai, UAE, with experience in Jordan, building apps with Spring Boot, React/Next.js and AI.`,
   url: 'https://mhmdfk.github.io/',
   imageAlt: `${profile.fullName} — ${profile.title} portfolio`,
