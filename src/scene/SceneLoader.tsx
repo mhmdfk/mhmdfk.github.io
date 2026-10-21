@@ -16,6 +16,7 @@ import {
   set,
   useSceneQuality,
 } from '../state/sceneQuality'
+import { set as setRoomView } from '../state/roomView'
 
 const Scene = lazy(() => import('./Scene'))
 
@@ -78,6 +79,12 @@ export function SceneLoader() {
     }, 0)
     return () => window.clearTimeout(timer)
   }, [tier])
+
+  // The room view is only offered while the scene is actually on screen.
+  useEffect(() => {
+    setRoomView({ ready: loaded && tier !== 'off' })
+  }, [loaded, tier])
+  useEffect(() => () => setRoomView({ ready: false }), [])
 
   return (
     <>

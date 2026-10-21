@@ -12,6 +12,7 @@ import { About } from './sections/About'
 import { Skills } from './sections/Skills'
 import { Contact } from './sections/Contact'
 import { Footer } from './sections/Footer'
+import { RoomView } from './components/RoomView'
 
 export default function App() {
   useEffect(initSmoothScroll, [])
@@ -20,6 +21,7 @@ export default function App() {
     <LazyMotion features={domAnimation} strict>
       <CustomCursor />
       <SceneLoader />
+      <RoomView />
       <div id="site-content">
         <a className="skip-link" href="#main">
           {ui.skip}

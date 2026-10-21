@@ -1,9 +1,11 @@
 import { isSplashActive } from './splash'
+import { isRoomViewPop } from '../state/roomView'
 import Lenis from 'lenis'
 
 let lenis: Lenis | null = null
 let dialogOpen = false
 let splashOpen = false
+let roomOpen = false
 let reducedMotion = false
 const motionListeners = new Set<(reduced: boolean) => void>()
 
@@ -33,13 +35,19 @@ export function sectionTop(id: string) {
 
 export function setDialogScrollLocked(locked: boolean) {
   dialogOpen = locked
-  if (dialogOpen || splashOpen) lenis?.stop()
+  if (dialogOpen || splashOpen || roomOpen) lenis?.stop()
   else lenis?.start()
 }
 
 export function setSplashScrollLocked(locked: boolean) {
   splashOpen = locked
-  if (dialogOpen || splashOpen) lenis?.stop()
+  if (dialogOpen || splashOpen || roomOpen) lenis?.stop()
+  else lenis?.start()
+}
+
+export function setRoomScrollLocked(locked: boolean) {
+  roomOpen = locked
+  if (dialogOpen || splashOpen || roomOpen) lenis?.stop()
   else lenis?.start()
 }
 
@@ -121,7 +129,7 @@ export function initSmoothScroll() {
         autoRaf: true,
         prevent: (node) => node instanceof HTMLDialogElement,
       })
-      if (dialogOpen || splashOpen || isSplashActive()) lenis.stop()
+      if (dialogOpen || splashOpen || roomOpen || isSplashActive()) lenis.stop()
     }
   }
   const navigate = (event: MouseEvent) => {
@@ -148,12 +156,15 @@ export function initSmoothScroll() {
     const id = window.location.hash.slice(1)
     if (id) scrollToId(id, { updateHash: false, immediate: true })
   }
+  const onPopState = (event: PopStateEvent) => {
+    if (!isRoomViewPop(event)) syncHash()
+  }
   let disposed = false
   configure()
   document.addEventListener('click', navigate)
   window.addEventListener('splashdone', syncHash)
   window.addEventListener('hashchange', syncHash)
-  window.addEventListener('popstate', syncHash)
+  window.addEventListener('popstate', onPopState)
   motion.addEventListener('change', configure)
   void document.fonts.ready.then(() => {
     if (!disposed) syncHash()
@@ -163,7 +174,7 @@ export function initSmoothScroll() {
     document.removeEventListener('click', navigate)
     window.removeEventListener('splashdone', syncHash)
     window.removeEventListener('hashchange', syncHash)
-    window.removeEventListener('popstate', syncHash)
+    window.removeEventListener('popstate', onPopState)
     motion.removeEventListener('change', configure)
     lenis?.destroy()
     lenis = null

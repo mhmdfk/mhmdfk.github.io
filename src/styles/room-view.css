@@ -1,0 +1,295 @@
+/* The mobile room view: the page fades away and the 3D room takes over. */
+
+/* Desktop already shows the room beside the text. */
+@media (min-width: 1024px) {
+  button.room-entry {
+    display: none;
+  }
+}
+.nav-links button.room-entry {
+  padding-block: 0.9rem;
+  border: 0;
+  background: none;
+  color: var(--color-muted);
+  font-size: 0.82rem;
+  text-align: left;
+  white-space: nowrap;
+  transition: color 160ms;
+}
+.nav-links button.room-entry:hover {
+  color: var(--color-accent);
+}
+@media (max-width: 767px) {
+  .nav-links button.room-entry {
+    padding: 0.8rem 0.5rem;
+  }
+}
+
+#site-content {
+  transition: opacity 300ms ease;
+}
+html.room-view #site-content {
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 300ms ease,
+    visibility 0s linear 300ms;
+}
+/* Also stops iOS Safari from touch-scrolling the page behind the view. */
+html.room-view,
+html.room-view body {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+.room-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+}
+/* Takes drags from anywhere on the screen; the tags and buttons sit above. */
+.room-surface {
+  position: absolute;
+  inset: 0;
+  cursor: grab;
+  pointer-events: auto;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.room-surface:active {
+  cursor: grabbing;
+}
+.scene-object-hovered .room-surface {
+  cursor: pointer;
+}
+
+/* The tags appear once the entrance sweep ends, and go while an object is in
+   focus. Hidden, they can't be focused or tapped. */
+.room-tags {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 250ms ease,
+    visibility 0s linear 250ms;
+}
+.room-tags.is-shown {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 350ms ease;
+}
+
+.room-back {
+  position: absolute;
+  z-index: 20;
+  top: max(0.75rem, env(safe-area-inset-top));
+  right: max(0.75rem, env(safe-area-inset-right));
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: var(--color-background);
+  color: var(--color-text);
+  font-size: 0.85rem;
+  font-weight: 500;
+  pointer-events: auto;
+  touch-action: manipulation;
+  transition:
+    background 160ms,
+    border-color 160ms;
+}
+.room-back:hover {
+  background: var(--color-surface);
+  border-color: var(--color-muted);
+}
+
+/* A pin: the tip of its tail sits on the object. */
+.room-tag {
+  position: relative;
+  display: block;
+  min-width: 4rem;
+  min-height: 2.75rem;
+  margin-bottom: 0.45rem;
+  padding: 0 0.95rem;
+  border: 1px solid var(--color-accent);
+  border-radius: 999px;
+  background: var(--color-accent);
+  box-shadow: 0 0.35rem 1.25rem #000000a6;
+  color: var(--color-background);
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+  pointer-events: auto;
+  touch-action: manipulation;
+  transform-origin: 50% 100%;
+  transition: transform 350ms ease;
+}
+.room-tags:not(.is-shown) .room-tag {
+  transform: scale(0.9);
+}
+.room-tag::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -0.45rem;
+  border: 0.45rem solid transparent;
+  border-top-color: var(--color-accent);
+  border-bottom: 0;
+}
+.room-tag:hover,
+.room-tag:active {
+  background: #cff1db;
+}
+.room-tag:hover::after,
+.room-tag:active::after {
+  border-top-color: #cff1db;
+}
+
+.room-welcome,
+.room-card {
+  position: absolute;
+  z-index: 20;
+  left: max(0.75rem, env(safe-area-inset-left));
+  right: max(0.75rem, env(safe-area-inset-right));
+  bottom: max(0.75rem, env(safe-area-inset-bottom));
+  max-width: 24rem;
+  margin-inline: auto;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+  box-shadow: 0 0.5rem 1.5rem #000000a6;
+  color: var(--color-muted);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  pointer-events: auto;
+  animation: room-tag-in 300ms ease 450ms both;
+}
+.room-welcome-title,
+.room-card-title {
+  margin-bottom: 0.3rem;
+  color: var(--color-text);
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+}
+.room-welcome-dismiss {
+  display: block;
+  min-height: 2.75rem;
+  margin: 0.8rem 0 0 auto;
+  padding: 0 1.25rem;
+  border: 1px solid var(--color-accent);
+  border-radius: 4px;
+  background: var(--color-accent);
+  color: var(--color-background);
+  font-size: 0.85rem;
+  font-weight: 500;
+  touch-action: manipulation;
+}
+.room-welcome-dismiss:hover {
+  background: #cff1db;
+}
+
+/* The card for the object in focus: the camera keeps the object in the upper
+   part of the screen, so the card below never covers it. */
+.room-card {
+  animation: room-tag-in 300ms ease 350ms both;
+}
+.room-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.8rem;
+}
+.room-card-primary,
+.room-card-secondary {
+  flex: 1 1 auto;
+  min-height: 2.75rem;
+  padding: 0 1.25rem;
+  border: 1px solid var(--color-accent);
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  touch-action: manipulation;
+}
+.room-card-primary {
+  background: var(--color-accent);
+  color: var(--color-background);
+}
+.room-card-primary:hover {
+  background: #cff1db;
+}
+.room-card-secondary {
+  background: none;
+  color: var(--color-accent);
+}
+.room-card-secondary:hover {
+  background: #b3e5c61f;
+}
+
+/* Short screens: the cards shrink to a strip along the bottom. */
+@media (max-height: 500px) {
+  .room-welcome,
+  .room-card {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    column-gap: 1rem;
+    max-width: 32rem;
+    padding: 0.75rem 1rem;
+  }
+  .room-welcome-title,
+  .room-welcome-body,
+  .room-card-title,
+  .room-card-summary {
+    grid-column: 1;
+  }
+  .room-welcome-dismiss {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    margin: 0;
+  }
+  .room-card {
+    align-content: center;
+    align-items: center;
+  }
+  .room-card-actions {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    flex-direction: column;
+    margin: 0;
+  }
+}
+
+@keyframes room-tag-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #site-content,
+  html.room-view #site-content {
+    transition: none;
+  }
+  .room-welcome,
+  .room-card {
+    animation: none;
+  }
+  .room-tags,
+  .room-tags.is-shown,
+  .room-tag {
+    transition: none;
+  }
+}

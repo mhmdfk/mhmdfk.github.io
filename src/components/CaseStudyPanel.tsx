@@ -1,6 +1,7 @@
 import { isSplashActive } from '../lib/splash'
 import { openCaseStudy, registerCaseStudyOpener } from '../lib/caseStudyActions'
 import { scrollToId, setDialogScrollLocked } from '../lib/smoothScroll'
+import { isRoomViewPop } from '../state/roomView'
 import { useEffect, useRef, type RefObject } from 'react'
 import { projects, ui } from '../content/content'
 import { TirazDiagram } from './diagrams/TirazDiagram'
@@ -84,15 +85,18 @@ export function CaseStudyPanel({ triggers }: Props) {
         dialog.removeEventListener('cancel', onCancel)
       })
     }
+    const onPopState = (event: PopStateEvent) => {
+      if (!isRoomViewPop(event)) syncHash()
+    }
     window.addEventListener('splashdone', syncHash)
-    window.addEventListener('popstate', syncHash)
+    window.addEventListener('popstate', onPopState)
     window.addEventListener('hashchange', syncHash)
     syncHash()
     return () => {
       unregisterOpener()
       cleanups.forEach((cleanup) => cleanup())
       window.removeEventListener('splashdone', syncHash)
-      window.removeEventListener('popstate', syncHash)
+      window.removeEventListener('popstate', onPopState)
       window.removeEventListener('hashchange', syncHash)
       close(false)
     }

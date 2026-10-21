@@ -21,6 +21,8 @@ import { Room } from './Room'
 import { palette } from './layout'
 import { cameraStops } from './cameraPath'
 import { useScrollCamera } from './useScrollCamera'
+import { ObjectTags } from './ObjectTags'
+import { markThrottled, useRoomViewValue } from '../state/roomView'
 
 function disableScene() {
   setSceneQuality({ detected: 'off' })
@@ -38,14 +40,23 @@ function SceneRuntime({
   const gl = useThree((state) => state.gl)
   const setFrameloop = useThree((state) => state.setFrameloop)
   const invalidate = useThree((state) => state.invalidate)
+  const roomViewOpen = useRoomViewValue((state) => state.open)
+  const throttled = useRoomViewValue((state) => state.throttled)
   const [active, setActive] = useState(false)
   useEffect(() => {
     let intersecting = true
     const update = () => {
       const running = !document.hidden && intersecting
       // The low tier only renders on demand: scrolling and camera easing
-      // invalidate, so an idle page costs no frames.
-      setFrameloop(running ? (tier === 'low' ? 'demand' : 'always') : 'never')
+      // invalidate, so an idle page costs no frames. The room view keeps the
+      // camera, the tags and the idle animations moving, so it renders always.
+      setFrameloop(
+        running
+          ? tier === 'low' && !roomViewOpen
+            ? 'demand'
+            : 'always'
+          : 'never',
+      )
       if (running && tier === 'low') invalidate()
       setActive(running)
     }
@@ -68,11 +79,24 @@ function SceneRuntime({
       canvas.removeEventListener('webglcontextlost', lost)
       document.removeEventListener('visibilitychange', update)
     }
-  }, [gl, setFrameloop, invalidate, tier])
+  }, [gl, setFrameloop, invalidate, tier, roomViewOpen])
 
   // PerformanceMonitor counts rendered frames, which would read as low fps
-  // under demand rendering.
-  return active && tier !== 'low' ? (
+  // under demand rendering, so the low tier only measures in the room view.
+  // If it can't keep up there it drops back to the light settings for good
+  // (the scene itself stays).
+  if (!active) return null
+  if (tier === 'low')
+    return roomViewOpen && !throttled ? (
+      <PerformanceMonitor
+        ms={500}
+        iterations={10}
+        threshold={0.8}
+        bounds={() => [30, 60]}
+        onDecline={markThrottled}
+      />
+    ) : null
+  return (
     <PerformanceMonitor
       key={stage}
       ms={500}
@@ -81,7 +105,7 @@ function SceneRuntime({
       bounds={() => [tier === 'high' && stage < 2 ? 55 : 30, 60]}
       onDecline={onDecline}
     />
-  ) : null
+  )
 }
 
 function ScrollCamera({
@@ -172,6 +196,8 @@ export default function Scene({
   eventSource: HTMLElement
   tier: Exclude<SceneQuality, 'off'>
 }) {
+  const roomViewOpen = useRoomViewValue((state) => state.open)
+  const throttled = useRoomViewValue((state) => state.throttled)
   const [stage, setStage] = useState(0)
   const full = tier === 'high' && stage < 2
   const decline = () => {
@@ -238,7 +264,16 @@ export default function Scene({
             eventSource={eventSource}
             eventPrefix="client"
             shadows={full ? 'percentage' : false}
-            dpr={tier === 'high' && stage === 0 ? [1, 2] : 1}
+            dpr={
+              tier === 'high' && stage === 0
+                ? [1, 2]
+                : // Phones render sharper in the room view, where a still
+                  // frame is the point. R3F reapplies this prop on every render,
+                  // so a manual setDpr would not stick.
+                  tier === 'low' && roomViewOpen && !throttled
+                  ? Math.min(window.devicePixelRatio, 2)
+                  : 1
+            }
             frameloop="never"
             camera={{
               position: cameraStops[0].position,
@@ -279,10 +314,11 @@ export default function Scene({
               <SceneRuntime tier={tier} stage={stage} onDecline={decline} />
             )}
             <ScrollCamera intro={intro} tier={tier} />
+            {roomViewOpen && <ObjectTags />}
             <HoverContext.Provider value={{ hover, reportHover: setHover }}>
               <Room onMounted={markRoomMounted} />
             </HoverContext.Provider>
-            {full && (
+            {(full || tier === 'low') && (
               <ContactShadows
                 position={[0, 0.03, 0]}
                 scale={20}

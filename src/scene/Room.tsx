@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useFrame } from '@react-three/fiber'
+import { MathUtils, type Mesh, type MeshStandardMaterial } from 'three'
 import { RoomDetails } from './RoomDetails'
 import { InteractiveObject } from './InteractiveObject'
 import { anchors, palette, room } from './layout'
@@ -10,6 +12,39 @@ import { Shelf } from './objects/Shelf'
 import { Diploma } from './objects/Diploma'
 
 const STAGES = 4
+
+// How far outside the room (from its middle, in x) the camera is when a side
+// wall starts to fade, and when it has gone.
+const FADE_FROM = 4.5
+const FADE_TO = 5.5
+
+// A side wall fades out once the camera has gone round beyond it, so in the
+// room view it never hides what is inside. The camera stays within the room's
+// width on the scroll tour, so the wall only ever fades there. It is transparent
+// from the start so its shader is compiled with the rest, not when first faded.
+function SideWall({ side }: { side: -1 | 1 }) {
+  const mesh = useRef<Mesh>(null)
+  const material = useRef<MeshStandardMaterial>(null)
+  useFrame(({ camera }) => {
+    if (!mesh.current || !material.current) return
+    const opacity =
+      1 - MathUtils.smoothstep(camera.position.x * side, FADE_FROM, FADE_TO)
+    material.current.opacity = opacity
+    mesh.current.visible = opacity > 0.01
+  })
+  return (
+    <mesh ref={mesh} position={[(side * room.width) / 2, room.height / 2, 0]}>
+      <boxGeometry args={[0.16, room.height, room.depth]} />
+      <meshStandardMaterial
+        ref={material}
+        color={palette.wall}
+        roughness={0.85}
+        flatShading
+        transparent
+      />
+    </mesh>
+  )
+}
 
 // Mounting the whole room in one go is a single long task on slow phones.
 // Mount it one group per animation frame instead, so each stage is its own
@@ -40,20 +75,8 @@ export function Room({ onMounted }: { onMounted: () => void }) {
         size={[room.width, room.height, 0.16]}
         color={palette.wall}
       />
-      <Block
-        castShadow={false}
-        receiveShadow={false}
-        position={[-room.width / 2, room.height / 2, 0]}
-        size={[0.16, room.height, room.depth]}
-        color={palette.wall}
-      />
-      <Block
-        castShadow={false}
-        receiveShadow={false}
-        position={[room.width / 2, room.height / 2, 0]}
-        size={[0.16, room.height, room.depth]}
-        color={palette.wall}
-      />
+      <SideWall side={-1} />
+      <SideWall side={1} />
       <InteractiveObject id="window">
         <group position={anchors.window.position}>
           <Block

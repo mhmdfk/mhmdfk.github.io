@@ -1,11 +1,13 @@
 import { CommandPalette } from './CommandPalette'
 import { useEffect, useRef, useState } from 'react'
 import { profile, ui } from '../content/content'
+import { openRoomView, useRoomView } from '../state/roomView'
 
 export function Nav() {
   const [open, setOpen] = useState(false)
   const [active, setActive] = useState('top')
   const button = useRef<HTMLButtonElement>(null)
+  const { ready } = useRoomView()
 
   useEffect(() => {
     const sections = ['top', ...ui.nav.map(({ id }) => id)]
@@ -89,6 +91,22 @@ export function Nav() {
               {label}
             </a>
           ))}
+          {ready && (
+            <button
+              type="button"
+              className="room-entry"
+              onClick={(event) => {
+                // The dropdown closes, hiding this item, so focus returns to the
+                // menu button instead.
+                const menu = button.current
+                const dropdown = menu !== null && menu.offsetParent !== null
+                setOpen(false)
+                openRoomView(dropdown ? menu : event.currentTarget)
+              }}
+            >
+              {ui.roomView.open}
+            </button>
+          )}
         </div>
         <CommandPalette />
       </nav>

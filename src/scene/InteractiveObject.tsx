@@ -8,6 +8,7 @@ import {
   type ObjectId,
 } from './interaction'
 import { palette } from './layout'
+import { focusObject, get as getRoomView } from '../state/roomView'
 
 export function InteractiveObject({
   id,
@@ -76,7 +77,10 @@ export function InteractiveObject({
           return
         event.stopPropagation()
         reportHover(null)
-        activateObject(id)
+        // In the room view a tap flies the camera up to the object first.
+        const view = getRoomView()
+        if (!view.open) activateObject(id)
+        else if (!view.focus) focusObject(id)
       }}
     >
       {children}

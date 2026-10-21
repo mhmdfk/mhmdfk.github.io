@@ -1,6 +1,8 @@
 import { MagneticButton } from '../components/MagneticButton'
 import { profile, ui } from '../content/content'
+import { openRoomView, useRoomView } from '../state/roomView'
 export function Hero() {
+  const { ready } = useRoomView()
   return (
     <section id="top" className="hero" aria-labelledby="hero-title">
       <p className="eyebrow">
@@ -24,6 +26,15 @@ export function Hero() {
           {ui.hero.contact}
           <span aria-hidden="true">↗</span>
         </MagneticButton>
+        {ready && (
+          <button
+            type="button"
+            className="button room-entry"
+            onClick={(event) => openRoomView(event.currentTarget)}
+          >
+            {ui.roomView.open}
+          </button>
+        )}
       </div>
       <p className="location">
         <span aria-hidden="true">↳</span> {profile.location}
