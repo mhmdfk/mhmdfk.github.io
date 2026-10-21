@@ -20,7 +20,6 @@ export function SplashScreen({
     'loading' | 'exiting' | 'quick-exit' | 'done'
   >('loading')
   const [announcement, setAnnouncement] = useState('')
-  const skip = useRef<HTMLButtonElement>(null)
   const release = useRef(() => {})
   const started = useRef(0)
   const finished = useRef(false)
@@ -47,7 +46,6 @@ export function SplashScreen({
     page.inert = true
     page.setAttribute('aria-hidden', 'true')
     setSplashScrollLocked(true)
-    skip.current?.focus({ preventScroll: true })
     const announce = window.setTimeout(
       () => setAnnouncement(ui.splash.announcement),
       0,
@@ -62,8 +60,9 @@ export function SplashScreen({
         event.stopImmediatePropagation()
         finish()
       } else if (event.key === 'Tab') {
+        // Nothing is focusable while the page is inert; keep focus here so
+        // Escape still reaches this listener.
         event.preventDefault()
-        skip.current?.focus()
       }
     }
     window.addEventListener('keydown', onKey, true)
@@ -133,14 +132,6 @@ export function SplashScreen({
           {building ? ui.splash.building : ui.splash.loading}
         </p>
       </div>
-      <button
-        ref={skip}
-        type="button"
-        className="splash-skip text-button"
-        onClick={finish}
-      >
-        {ui.splash.skip}
-      </button>
     </div>
   )
 }

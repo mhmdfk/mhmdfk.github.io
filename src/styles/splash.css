@@ -90,14 +90,6 @@ html.js.splash-pending .splash {
   margin-top: 0.9rem;
   font-size: 0.7rem;
 }
-.splash-skip {
-  position: absolute;
-  right: max(1.5rem, env(safe-area-inset-right));
-  bottom: max(1.5rem, env(safe-area-inset-bottom));
-  min-height: 2.75rem;
-  padding: 0.5rem;
-  font-size: 0.8rem;
-}
 @keyframes splash-draw {
   from {
     stroke-dashoffset: 1;

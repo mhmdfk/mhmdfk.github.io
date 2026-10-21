@@ -264,7 +264,6 @@ export const ui = {
     announcement: 'Loading',
     loading: 'Loading the studio…',
     building: 'Arranging the room…',
-    skip: 'Skip',
   },
   commandPalette: {
     title: 'Command palette',
