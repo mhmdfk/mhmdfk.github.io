@@ -8,8 +8,7 @@ export function Hero() {
         {ui.hero.eyebrow}
       </p>
       <h1 id="hero-title">
-        {profile.name}
-        <span>{profile.title}</span>
+        {profile.name} <span className="hero-role">{profile.title}</span>
       </h1>
       <p className="hero-pitch">{profile.pitch}</p>
       <div className="actions">

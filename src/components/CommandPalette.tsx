@@ -169,7 +169,7 @@ export function CommandPalette() {
         }}
       >
         <div className="command-header">
-          <h2 id="command-title">{copy.title}</h2>
+          <p id="command-title">{copy.title}</p>
           <button type="button" className="text-button" onClick={close}>
             {copy.close}
           </button>

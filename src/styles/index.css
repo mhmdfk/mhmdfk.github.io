@@ -175,7 +175,7 @@ h1 {
   line-height: 1.08;
   margin-top: 1.8rem;
 }
-h1 span {
+h1 .hero-role {
   display: block;
   color: var(--color-muted);
   font-size: 0.7em;
@@ -228,7 +228,7 @@ h1 span {
   font-size: 0.8rem;
   margin-top: 2.25rem;
 }
-.location span {
+.location > span:first-child {
   color: var(--color-accent);
   margin-right: 0.35rem;
 }
@@ -561,7 +561,7 @@ h3 {
   h1 {
     font-size: clamp(3rem, 10vw, 4.5rem);
   }
-  h1 span {
+  h1 .hero-role {
     font-size: 0.66em;
     line-height: 1.2;
     margin-top: 1rem;
