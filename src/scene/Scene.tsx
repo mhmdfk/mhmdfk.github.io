@@ -37,12 +37,16 @@ function SceneRuntime({
 }) {
   const gl = useThree((state) => state.gl)
   const setFrameloop = useThree((state) => state.setFrameloop)
+  const invalidate = useThree((state) => state.invalidate)
   const [active, setActive] = useState(false)
   useEffect(() => {
     let intersecting = true
     const update = () => {
       const running = !document.hidden && intersecting
-      setFrameloop(running ? 'always' : 'never')
+      // The low tier only renders on demand: scrolling and camera easing
+      // invalidate, so an idle page costs no frames.
+      setFrameloop(running ? (tier === 'low' ? 'demand' : 'always') : 'never')
+      if (running && tier === 'low') invalidate()
       setActive(running)
     }
     const lost = (event: Event) => {
@@ -64,9 +68,11 @@ function SceneRuntime({
       canvas.removeEventListener('webglcontextlost', lost)
       document.removeEventListener('visibilitychange', update)
     }
-  }, [gl, setFrameloop])
+  }, [gl, setFrameloop, invalidate, tier])
 
-  return active ? (
+  // PerformanceMonitor counts rendered frames, which would read as low fps
+  // under demand rendering.
+  return active && tier !== 'low' ? (
     <PerformanceMonitor
       key={stage}
       ms={500}

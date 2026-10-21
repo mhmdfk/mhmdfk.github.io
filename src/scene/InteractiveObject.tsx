@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef, type ReactNode } from 'react'
-import type { ThreeEvent } from '@react-three/fiber'
+import { useThree, type ThreeEvent } from '@react-three/fiber'
 import { Group, Mesh, MeshStandardMaterial } from 'three'
 import {
   HoverContext,
@@ -19,6 +19,7 @@ export function InteractiveObject({
   const group = useRef<Group>(null)
   const { hover: currentHover, reportHover } = useContext(HoverContext)
   const hovered = currentHover?.id === id
+  const invalidate = useThree((state) => state.invalidate)
   useEffect(() => {
     if (!hovered) return
     const restore: (() => void)[] = []
@@ -39,8 +40,13 @@ export function InteractiveObject({
         })
       }
     })
-    return () => restore.forEach((reset) => reset())
-  }, [hovered])
+    // The highlight bypasses props, so ask for a frame under demand rendering.
+    invalidate()
+    return () => {
+      restore.forEach((reset) => reset())
+      invalidate()
+    }
+  }, [hovered, invalidate])
 
   const hover = (event: ThreeEvent<PointerEvent>) => {
     if (

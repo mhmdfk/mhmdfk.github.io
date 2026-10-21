@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import type { SceneIntro } from './useSceneIntro'
 import type { SceneQuality } from './quality'
-import { useFrame } from '@react-three/fiber'
+import { useFrame, useThree } from '@react-three/fiber'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { MathUtils, PerspectiveCamera, Vector3 } from 'three'
@@ -11,6 +11,10 @@ import {
   takeCameraSnap,
 } from '../lib/smoothScroll'
 import { cameraAt, cameraStops } from './cameraPath'
+
+// Squared distance under which the camera counts as settled (about a tenth of
+// a pixel on screen), so demand rendering can stop.
+const SETTLED = 1e-6
 
 export function useScrollCamera(
   intro: SceneIntro,
@@ -22,6 +26,7 @@ export function useScrollCamera(
   const reduced = useRef(false)
   const initialized = useRef(false)
   const target = useRef(new Vector3())
+  const invalidate = useThree((state) => state.invalidate)
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger)
     const unsubscribeMotion = subscribeReducedMotion((value) => {
@@ -71,10 +76,14 @@ export function useScrollCamera(
     const trigger = ScrollTrigger.create({
       start: 0,
       end: () => Math.max(1, ScrollTrigger.maxScroll(window)),
-      onUpdate: update,
+      onUpdate: () => {
+        update()
+        invalidate()
+      },
       onRefresh: () => {
         measure()
         update()
+        invalidate()
       },
     })
     const refresh = () => ScrollTrigger.refresh()
@@ -89,7 +98,7 @@ export function useScrollCamera(
       window.removeEventListener('resize', refresh)
       unsubscribeMotion()
     }
-  }, [])
+  }, [invalidate])
 
   useFrame(({ camera, size }, delta) => {
     if (camera instanceof PerspectiveCamera) {
@@ -136,10 +145,22 @@ export function useScrollCamera(
       return
     }
     // Reach 99% of a new framing within 300 ms, with no time-based path drift.
-    const blend = initialized.current && !snap ? 1 - Math.exp(-20 * delta) : 1
-    camera.position.lerp(new Vector3(...next.position), blend)
-    target.current.lerp(new Vector3(...next.target), blend)
+    // Demand rendering reports the whole idle gap as the first frame's delta,
+    // so cap it: otherwise the camera jumps instead of easing.
+    const step = Math.min(delta, 1 / 30)
+    const blend = initialized.current && !snap ? 1 - Math.exp(-20 * step) : 1
+    const goal = new Vector3(...next.position)
+    const aim = new Vector3(...next.target)
+    camera.position.lerp(goal, blend)
+    target.current.lerp(aim, blend)
     camera.lookAt(target.current)
     initialized.current = true
+    // Demand rendering: keep asking for frames until the easing has settled.
+    if (
+      tier === 'low' &&
+      (camera.position.distanceToSquared(goal) > SETTLED ||
+        target.current.distanceToSquared(aim) > SETTLED)
+    )
+      invalidate()
   })
 }
